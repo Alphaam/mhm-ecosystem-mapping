@@ -51,6 +51,7 @@ export interface GraphNode {
   /** Organization Service Type: 5 broad groupings used for node color and
    *  the category filter/legend. */
   category: string;
+  categoryInferred: boolean;
   /** Service Subsector: the tracker's original, more granular "Primary
    *  Service Category" column, shown alongside the broader category above. */
   subsector: string;

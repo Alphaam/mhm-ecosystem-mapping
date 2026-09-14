@@ -19,7 +19,7 @@ export default function DataPage() {
             MHM Digital Equity Ecosystem Analysis
           </h1>
           <p className="mt-4 text-sm sm:text-base text-gray-600">
-            Complete data from the August 2026 ecosystem mapping analysis, covering grantee relationships, reach, and impact.
+            Reported findings from the August 2026 ecosystem mapping analysis. This report summarizes a 45-organization portfolio; the regional explorer also includes partner organizations. Counts use different populations and should not be directly equated. This working dataset is not independently verified.
           </p>
         </div>
 

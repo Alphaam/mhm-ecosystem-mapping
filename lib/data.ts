@@ -257,7 +257,7 @@ export function buildGraph(regionCode: string): Graph {
     const category = mapCategory(subsector);
 
     const connections: GraphNode["connections"] = regionalRows
-      .filter((row) => row.grantee === name || row.organization === name)
+      .filter((row) => !!row.grantee && (row.grantee === name || row.organization === name))
       .map((row) => ({
         other: row.grantee === name ? row.organization : (row.grantee ?? "Unknown"),
         direction: row.grantee === name ? "outgoing" : "incoming",
@@ -271,6 +271,7 @@ export function buildGraph(regionCode: string): Graph {
     return {
       id: name,
       category,
+      categoryInferred: !ALL_ROWS.some((row) => row.organization === name && isRealCategory(row.primaryServiceCategory)),
       subsector,
       isGrantee,
       granteeStatus: granteeStatusFor(name, isGrantee),
