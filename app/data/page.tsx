@@ -111,7 +111,7 @@ export default function DataPage() {
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis type="number" />
                 <YAxis dataKey="organization" type="category" width={190} tick={{ fontSize: 11 }} />
-                <Tooltip formatter={(value) => `$${value.toLocaleString()}`} />
+                <Tooltip formatter={(value) => `$${typeof value === 'number' ? value.toLocaleString() : value}`} />
                 <Bar dataKey="amount" fill="#3C4ED6" />
               </BarChart>
             </ResponsiveContainer>
@@ -132,7 +132,7 @@ export default function DataPage() {
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis dataKey="year" />
                 <YAxis />
-                <Tooltip formatter={(value) => `$${(value / 1000000).toFixed(1)}M`} />
+                <Tooltip formatter={(value) => `$${typeof value === 'number' ? (value / 1000000).toFixed(1) : value}M`} />
                 <Line
                   type="monotone"
                   dataKey="amount"
@@ -198,7 +198,7 @@ export default function DataPage() {
                     <CartesianGrid strokeDasharray="3 3" />
                     <XAxis dataKey="period" angle={-45} textAnchor="end" height={100} tick={{ fontSize: 11 }} />
                     <YAxis />
-                    <Tooltip formatter={(value) => value.toLocaleString()} />
+                    <Tooltip formatter={(value) => typeof value === 'number' ? value.toLocaleString() : value} />
                     <Bar dataKey="count" fill="#3C4ED6" />
                   </BarChart>
                 </ResponsiveContainer>
@@ -239,7 +239,7 @@ export default function DataPage() {
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis dataKey="period" angle={-45} textAnchor="end" height={100} tick={{ fontSize: 11 }} />
                 <YAxis />
-                <Tooltip formatter={(value) => value.toLocaleString()} />
+                <Tooltip formatter={(value) => typeof value === 'number' ? value.toLocaleString() : value} />
                 <Bar dataKey="count" fill="#FF6B6B" />
               </BarChart>
             </ResponsiveContainer>
