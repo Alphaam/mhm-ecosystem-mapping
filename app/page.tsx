@@ -1,4 +1,5 @@
 import { HeroRegionPicker } from "@/components/HeroRegionPicker";
+import { ExecutiveSummary } from "@/components/ExecutiveSummary";
 import { buildGraph, REGIONS } from "@/lib/data";
 
 export default function HomePage() {
@@ -28,6 +29,17 @@ export default function HomePage() {
             across its Texas service area — pick a region below to explore
             who works with whom, how actively, and around what service.
           </p>
+          <HeroRegionPicker regions={regions} />
+        </div>
+      </section>
+
+      <ExecutiveSummary />
+
+      <section className="bg-white px-6 py-16">
+        <div className="mx-auto w-full max-w-6xl">
+          <h2 className="text-2xl font-semibold text-[var(--raisin)] mb-8">
+            Explore by Region
+          </h2>
           <HeroRegionPicker regions={regions} />
         </div>
       </section>

@@ -1,0 +1,195 @@
+{
+  "executiveSummary": {
+    "stats": [
+      {
+        "value": "79K",
+        "label": "Individuals served since 2024",
+        "description": "Nearly tripling from Year 1, with device distribution reaching 32K total"
+      },
+      {
+        "value": "3 of 20",
+        "label": "Anchor organizations",
+        "description": "Human I-T, City of Pharr, Compudopt spent $2.1M of the $4.3M total spending"
+      },
+      {
+        "value": "62%",
+        "label": "Partner organizations not direct grantees",
+        "description": "Of the 53 ecosystem partners, the funded network catalyzes a wider ecosystem"
+      }
+    ]
+  },
+  "portfolio": {
+    "totalOrganizations": 45,
+    "activeGrants": 35,
+    "historicalClosed": 10
+  },
+  "dataLimitations": {
+    "fluxxReports": [
+      { "period": "2024 Year-End", "organizations": 18 },
+      { "period": "2025 Mid-Year", "organizations": 29 },
+      { "period": "2025 Year-End", "organizations": 30 },
+      { "period": "2026 Mid-Year", "organizations": 34 }
+    ],
+    "kpiReports": [
+      { "period": "2024 Mid-Year", "organizations": 20 },
+      { "period": "2024 Year-End", "organizations": 20 },
+      { "period": "2025 Mid-Year", "organizations": 19 },
+      { "period": "2025 Year-End", "organizations": 19 }
+    ]
+  },
+  "organizationsByService": [
+    { "service": "Education (Higher Ed / School)", "count": 8 },
+    { "service": "Health", "count": 6 },
+    { "service": "Digital Equity / Digital Literacy", "count": 5 },
+    { "service": "Human & Social Services", "count": 4 },
+    { "service": "Government / Municipal", "count": 4 },
+    { "service": "Youth Development", "count": 4 },
+    { "service": "Community & Economic Development", "count": 4 },
+    { "service": "Workforce Development", "count": 3 },
+    { "service": "Library", "count": 2 },
+    { "service": "Domestic Violence / Victim Services", "count": 1 },
+    { "service": "Housing", "count": 1 },
+    { "service": "Senior Services", "count": 1 },
+    { "service": "Disability Services", "count": 1 },
+    { "service": "Homeless Services", "count": 1 }
+  ],
+  "organizationsByGeography": [
+    { "region": "San Antonio MSA", "count": 16 },
+    { "region": "Rural / Non-Metro County", "count": 10 },
+    { "region": "Rio Grande Valley", "count": 10 },
+    { "region": "Austin MSA", "count": 9 },
+    { "region": "Other Metropolitan Area", "count": 9 },
+    { "region": "Laredo MSA", "count": 3 }
+  ],
+  "recentFunding": {
+    "description": "Three of 20 funded grantees – Human I-T, Computdopt, and City of Pharr – account for $2.1 million of reported spending – about half of the total $4.3 million spending reported.",
+    "ytdGrantFundsSpent": [
+      { "organization": "Human-I-T", "amount": 909000 },
+      { "organization": "Compudopt", "amount": 662000 },
+      { "organization": "City of Pharr", "amount": 523000 },
+      { "organization": "MHP Salud", "amount": 414000 },
+      { "organization": "digitalLIFT", "amount": 283000 },
+      { "organization": "South Texas Rural Health Services, Inc.", "amount": 242000 },
+      { "organization": "Mission Road Developmental Center", "amount": 209000 },
+      { "organization": "Restore Education", "amount": 135000 },
+      { "organization": "Family Service Association of San Antonio, Inc.", "amount": 123000 },
+      { "organization": "Goodwill Industries of Central Texas", "amount": 110000 },
+      { "organization": "Sunrise Homeless Navigation Center", "amount": 98000 },
+      { "organization": "Empower House SA", "amount": 90000 },
+      { "organization": "Girls Inc. of San Antonio", "amount": 88000 },
+      { "organization": "People's Community Clinic", "amount": 77000 },
+      { "organization": "Building Promise USA", "amount": 73000 },
+      { "organization": "La Union del Pueblo Entero", "amount": 69000 },
+      { "organization": "Family Violence Prevention Services, Inc.", "amount": 55000 },
+      { "organization": "Community Council of South Central Texas, Inc.", "amount": 52000 },
+      { "organization": "Brownsville Housing Opportunity Corporation", "amount": 38000 },
+      { "organization": "City of Mercedes", "amount": 35000 }
+    ]
+  },
+  "totalFunding": {
+    "ytdGrantFundsSpent": [
+      { "year": "2024 Year End", "amount": 5800000 },
+      { "year": "2025 Mid Year", "amount": 4200000 },
+      { "year": "2025 Year End", "amount": 7600000 },
+      { "year": "2026 Mid Year", "amount": 4300000 }
+    ]
+  },
+  "mhmTotalFunding": {
+    "totalAwarded": {
+      "amount": "1.19B",
+      "description": "Awarded across 3,108 grants to 528 organizations since 1996"
+    },
+    "deAwardedRecent": {
+      "amount": "249M",
+      "description": "Awarded from 2021-2025 across 430 orgs"
+    },
+    "ruralCounty": {
+      "amount": "43.9M",
+      "description": "Awarded to organizations in a rural county"
+    },
+    "deTotal": {
+      "amount": "22.5M",
+      "description": "Awarded total",
+      "percent": "7%",
+      "percentDescription": "Of all MHM organizations funded"
+    },
+    "deActiveGrants": {
+      "count": 34,
+      "description": "Organizations"
+    }
+  },
+  "individualsServed": {
+    "totalServed": 78694,
+    "timeline": [
+      { "period": "2024 Mid Year", "count": 7202 },
+      { "period": "2024 Year End", "count": 25612 },
+      { "period": "2025 Mid Year", "count": 23548 },
+      { "period": "2025 Year End", "count": 22332 }
+    ],
+    "demographics": {
+      "hispanicLatino": "74-78%",
+      "householdIncomeUnder35k": "78%"
+    }
+  },
+  "deviceDistribution": {
+    "totalDevices": 32418,
+    "timeline": [
+      { "period": "2024 Mid Year", "count": 1637 },
+      { "period": "2024 Year End", "count": 13890 },
+      { "period": "2025 Mid Year", "count": 6806 },
+      { "period": "2025 Year End", "count": 10085 }
+    ],
+    "deviceTypes": [
+      "New Laptop",
+      "Refurbished Laptop",
+      "New Desktop",
+      "Refurbished Desktop",
+      "New Smartphone",
+      "Refurbished Smartphone",
+      "New Hotspot",
+      "Refurbished Hotspot",
+      "New Internet-Enabled Device",
+      "Refurbished Internet-Enabled Device",
+      "New Health-Related Device",
+      "Refurbished Health-Related Device"
+    ]
+  },
+  "programEngagement": {
+    "communityOutreachEvents": [
+      { "period": "2024 Mid Year", "count": 192 },
+      { "period": "2024 Year End", "count": 170 },
+      { "period": "2025 Mid Year", "count": 222 },
+      { "period": "2025 Year End", "count": 348 }
+    ],
+    "totalOutreachEvents": 932,
+    "partnerOrganizationsEngaged": [
+      { "period": "2024 Mid Year", "count": 299 },
+      { "period": "2024 Year End", "count": 240 },
+      { "period": "2025 Mid Year", "count": 162 },
+      { "period": "2025 Year End", "count": 179 }
+    ],
+    "totalPartnerEngagements": 880
+  },
+  "collaborationNetwork": {
+    "trackedRelationships": 64,
+    "linkedOrganizations": 29,
+    "oneDirectional": 46,
+    "confirmed": 18,
+    "mostConnectedOrganizations": [
+      { "org": "digitalLIFT", "connections": 20 },
+      { "org": "Compudopt", "connections": 10 },
+      { "org": "Family Service Association of San Antonio", "connections": 9 },
+      { "org": "La Union del Pueblo Entero", "connections": 6 },
+      { "org": "Empower House SA", "connections": 5 },
+      { "org": "Restore Education", "connections": 5 },
+      { "org": "Girls Inc. of San Antonio", "connections": 5 },
+      { "org": "Intercultural Development Research Assoc.", "connections": 5 }
+    ],
+    "relationshipPatterns": {
+      "digitalLiftAsHub": "DigitalLIFT appears in 20 of 64 tracked relationships, reflecting its expanded role coordinating Digital Navigator placements and device/data-collection partnerships across San Antonio, Austin, and the Rio Grande Valley.",
+      "relationshipsExtendBeyondGrantees": "Separately from its 20 direct collaborations, digitalLIFT reports 53 'Ecosystem Partners' in its own year-end narrative, 62% of which (33 organizations) are not themselves direct MHM grantees.",
+      "mutualPartnershipsRare": "Only 18 of 64 relationships (28%) are corroborated by both organizations' reporting. The remaining 46 (72%) are one-directional, named by one grantee only.",
+      "compudoptNextMostConnected": "The organization appears in 10 of 64 relationships, a distant second to digitalLIFT, underscoring how concentrated the network is around a single hub."
+    }
+  }
+}
