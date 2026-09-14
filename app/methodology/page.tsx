@@ -9,11 +9,11 @@ function Source({ children }: { children: React.ReactNode }) {
 export default function MethodologyPage() {
   return (
     <main className="h-full flex-1 overflow-y-auto">
-      <div className="mx-auto max-w-3xl px-6 py-10 sm:py-14">
+      <div className="container-wide py-10 sm:py-14">
         <p className="text-xs font-medium uppercase tracking-widest text-muted-foreground">
           Methodology &amp; Data Sources
         </p>
-        <h1 className="mt-2 text-3xl font-semibold tracking-tight text-foreground">
+        <h1 className="mt-2 text-3xl font-semibold tracking-tight text-foreground sm:text-4xl">
           How this dashboard is built
         </h1>
         <p className="mt-4 text-sm text-muted-foreground sm:text-base">

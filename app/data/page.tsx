@@ -8,29 +8,24 @@ const COLORS_ACCENT = ["#FF6B6B", "#FFA550", "#FFD93D", "#6BCB77", "#4D96FF"];
 
 export default function DataPage() {
   return (
-    <main className="min-h-screen bg-gray-50">
-      <div className="mx-auto w-full max-w-7xl px-6 py-16">
+    <main className="bg-gray-50">
+      <div className="container-wide py-10 sm:py-14">
         {/* Header */}
-        <div className="mb-16">
-          <div className="mb-8">
-            <a
-              href="/"
-              className="text-sm font-medium text-[var(--cobalt)] hover:underline"
-            >
-              ← Back to home
-            </a>
-          </div>
-          <h1 className="text-4xl font-bold text-[var(--raisin)] mb-4">
+        <div className="mb-12">
+          <p className="text-xs font-medium uppercase tracking-widest text-gray-600">
+            Data &amp; Ecosystem Analysis
+          </p>
+          <h1 className="mt-2 text-3xl font-semibold tracking-tight text-[var(--raisin)] sm:text-4xl">
             MHM Digital Equity Ecosystem Analysis
           </h1>
-          <p className="text-lg text-gray-600 max-w-2xl">
+          <p className="mt-4 text-sm sm:text-base text-gray-600">
             Complete data from the August 2026 ecosystem mapping analysis, covering grantee relationships, reach, and impact.
           </p>
         </div>
 
         {/* Portfolio Overview */}
-        <section className="mb-16 bg-white rounded-lg p-8 shadow-sm border border-gray-200">
-          <h2 className="text-2xl font-bold text-[var(--raisin)] mb-8">
+        <section className="mb-16">
+          <h2 className="text-2xl font-semibold text-[var(--raisin)] mb-6">
             Portfolio Overview
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -51,7 +46,7 @@ export default function DataPage() {
 
         {/* Organizations by Primary Service */}
         <section className="mb-16 bg-white rounded-lg p-8 shadow-sm border border-gray-200">
-          <h2 className="text-2xl font-bold text-[var(--raisin)] mb-2">
+          <h2 className="text-2xl font-semibold text-[var(--raisin)] mb-2">
             Organizations by Primary Service
           </h2>
           <p className="text-gray-600 mb-8">
@@ -76,7 +71,7 @@ export default function DataPage() {
 
         {/* Organizations by Geography */}
         <section className="mb-16 bg-white rounded-lg p-8 shadow-sm border border-gray-200">
-          <h2 className="text-2xl font-bold text-[var(--raisin)] mb-2">
+          <h2 className="text-2xl font-semibold text-[var(--raisin)] mb-2">
             Organizations by Geography
           </h2>
           <p className="text-gray-600 mb-8">
@@ -100,7 +95,7 @@ export default function DataPage() {
 
         {/* Recent Funding */}
         <section className="mb-16 bg-white rounded-lg p-8 shadow-sm border border-gray-200">
-          <h2 className="text-2xl font-bold text-[var(--raisin)] mb-2">
+          <h2 className="text-2xl font-semibold text-[var(--raisin)] mb-2">
             DE Recent Funding
           </h2>
           <p className="text-gray-600 mb-8">
@@ -125,7 +120,7 @@ export default function DataPage() {
 
         {/* Total Funding Trends */}
         <section className="mb-16 bg-white rounded-lg p-8 shadow-sm border border-gray-200">
-          <h2 className="text-2xl font-bold text-[var(--raisin)] mb-2">
+          <h2 className="text-2xl font-semibold text-[var(--raisin)] mb-2">
             DE Total Funding
           </h2>
           <p className="text-gray-600 mb-8">
@@ -152,7 +147,7 @@ export default function DataPage() {
 
         {/* MHM Total Funding Context */}
         <section className="mb-16 bg-white rounded-lg p-8 shadow-sm border border-gray-200">
-          <h2 className="text-2xl font-bold text-[var(--raisin)] mb-2">
+          <h2 className="text-2xl font-semibold text-[var(--raisin)] mb-2">
             Total MHM Funding
           </h2>
           <p className="text-gray-600 mb-8">
@@ -188,7 +183,7 @@ export default function DataPage() {
 
         {/* Individuals Served */}
         <section className="mb-16 bg-white rounded-lg p-8 shadow-sm border border-gray-200">
-          <h2 className="text-2xl font-bold text-[var(--raisin)] mb-2">
+          <h2 className="text-2xl font-semibold text-[var(--raisin)] mb-2">
             Individuals Served
           </h2>
           <p className="text-gray-600 mb-8">
@@ -232,7 +227,7 @@ export default function DataPage() {
 
         {/* Device Distribution */}
         <section className="mb-16 bg-white rounded-lg p-8 shadow-sm border border-gray-200">
-          <h2 className="text-2xl font-bold text-[var(--raisin)] mb-2">
+          <h2 className="text-2xl font-semibold text-[var(--raisin)] mb-2">
             Device Distribution
           </h2>
           <p className="text-gray-600 mb-8">
@@ -256,7 +251,7 @@ export default function DataPage() {
 
         {/* Program Engagement */}
         <section className="mb-16 bg-white rounded-lg p-8 shadow-sm border border-gray-200">
-          <h2 className="text-2xl font-bold text-[var(--raisin)] mb-2">
+          <h2 className="text-2xl font-semibold text-[var(--raisin)] mb-2">
             Program Engagement
           </h2>
           <p className="text-gray-600 mb-8">
@@ -302,7 +297,7 @@ export default function DataPage() {
 
         {/* Collaboration Network */}
         <section className="mb-16 bg-white rounded-lg p-8 shadow-sm border border-gray-200">
-          <h2 className="text-2xl font-bold text-[var(--raisin)] mb-2">
+          <h2 className="text-2xl font-semibold text-[var(--raisin)] mb-2">
             Collaboration Network
           </h2>
           <p className="text-gray-600 mb-8">

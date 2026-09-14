@@ -18,7 +18,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
     <html lang="en" className={`${openSans.variable} h-dvh antialiased`}>
       <body className="flex h-dvh flex-col overflow-hidden bg-background text-foreground">
         <SiteHeader />
-        <div className="flex min-h-0 flex-1 flex-col">{children}</div>
+        <div className="flex min-h-0 flex-1 flex-col overflow-y-auto">{children}</div>
       </body>
     </html>
   );
