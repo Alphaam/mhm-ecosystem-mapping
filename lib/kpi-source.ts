@@ -25,6 +25,7 @@ const KPI_REVALIDATE_SECONDS = 3600;
 
 interface AirtableRecord {
   id: string;
+  createdTime?: string;
   fields: Record<string, unknown>;
 }
 
@@ -179,6 +180,7 @@ export async function getKpiMap(): Promise<Record<string, OrgKpiSummary>> {
 
     const record: KpiRecord = {
       period: periodLabel,
+      submittedAt: r.createdTime,
       individualsServed: toNumber(pickField(r.fields, METRIC_FIELDS.individualsServed)),
       outreachEvents: toNumber(pickField(r.fields, METRIC_FIELDS.outreachEvents)),
       organizationsEngaged: toNumber(pickField(r.fields, METRIC_FIELDS.organizationsEngaged)),

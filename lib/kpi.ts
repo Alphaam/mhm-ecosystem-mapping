@@ -6,6 +6,9 @@ export interface KpiRecord {
   connectorsHired: number | null;
   connectorsTrained: number | null;
   connectorSessions: number | null;
+  /** Airtable record creation time (ISO). Used to pick the most recent
+   *  submission when the same org+period is reported more than once. */
+  submittedAt?: string;
 }
 
 export interface KpiDataset {
@@ -34,26 +37,63 @@ export function fuzzyKey(name: string): string {
 }
 
 export interface OrgKpiSummary {
-  /** One row per KPI report the org appears in, oldest first. */
+  /** One row per reporting period, oldest first. Multiple submissions for the
+   *  same period are collapsed into a single row (most recent wins). */
   records: KpiRecord[];
-  /** Simple sum of "Number of individuals served" across every report on
-   *  file for this org. Each report period is its own reporting window (not
-   *  a running cumulative total), so this is a lifetime total across the
-   *  reports collected so far. */
+  /** Sum of "Number of individuals served" across each distinct reporting
+   *  period on file for this org. Each period is its own reporting window
+   *  (not a running cumulative total), so this is a lifetime total. Repeat
+   *  submissions of the same period are NOT double-counted. */
   totalIndividualsServed: number;
   latestIndividualsServed: number | null;
   latestPeriod: string | null;
 }
 
+const METRIC_KEYS = [
+  "individualsServed",
+  "outreachEvents",
+  "organizationsEngaged",
+  "connectorsHired",
+  "connectorsTrained",
+  "connectorSessions",
+] as const satisfies readonly (keyof KpiRecord)[];
+
+/** Collapse every submission for a single reporting period into one record.
+ *  Submissions are applied oldest-first so the most recent non-null value
+ *  wins for each metric — a re-submission corrects/updates that period rather
+ *  than stacking on top of earlier ones. */
+function mergePeriod(records: KpiRecord[]): KpiRecord {
+  const ordered = [...records].sort((a, b) => (a.submittedAt ?? "").localeCompare(b.submittedAt ?? ""));
+  const merged: KpiRecord = { ...ordered[0] };
+  for (const rec of ordered) {
+    for (const key of METRIC_KEYS) {
+      const value = rec[key];
+      if (value != null) merged[key] = value;
+    }
+    if (rec.submittedAt) merged.submittedAt = rec.submittedAt;
+  }
+  return merged;
+}
+
 /** Pure reducer over an org's KPI reports. `periodOrder` is the ordered list
  *  of period labels (oldest first) so "latest" and the table sort are
- *  deterministic regardless of the order records arrive from the source. */
+ *  deterministic regardless of the order records arrive from the source.
+ *  Records sharing a period are merged into one before totals are computed. */
 export function summarizeRecords(records: KpiRecord[], periodOrder: string[]): OrgKpiSummary {
   const rank = (p: string) => {
     const i = periodOrder.indexOf(p);
     return i === -1 ? Number.MAX_SAFE_INTEGER : i;
   };
-  const sorted = [...records].sort((a, b) => rank(a.period) - rank(b.period));
+
+  const byPeriod = new Map<string, KpiRecord[]>();
+  for (const rec of records) {
+    byPeriod.set(rec.period, [...(byPeriod.get(rec.period) ?? []), rec]);
+  }
+
+  const sorted = [...byPeriod.values()]
+    .map(mergePeriod)
+    .sort((a, b) => rank(a.period) - rank(b.period));
+
   const totalIndividualsServed = sorted.reduce((sum, r) => sum + (r.individualsServed ?? 0), 0);
   const withServed = sorted.filter((r) => r.individualsServed != null);
   const latest = withServed[withServed.length - 1] ?? null;
