@@ -1,6 +1,13 @@
 import "server-only";
 
-import { fuzzyKey, summarizeRecords, type KpiRecord, type OrgKpiSummary } from "./kpi";
+import {
+  formatPeriodLabel,
+  fuzzyKey,
+  summarizeRecords,
+  type EcosystemKpiTotals,
+  type KpiRecord,
+  type OrgKpiSummary,
+} from "./kpi";
 
 /** Live KPI data comes from an Airtable base fed by a Microsoft Form.
  *  Three linked tables:
@@ -200,4 +207,44 @@ export async function getKpiMap(): Promise<Record<string, OrgKpiSummary>> {
     map[key] = summarizeRecords(records, periodOrder);
   }
   return map;
+}
+
+/**
+ * Aggregate the live KPI data across every organization into ecosystem-wide
+ * per-period totals for the Data page. Uses the same deduplicated per-org
+ * summaries as the node panels (repeat submissions of a period do not
+ * double-count), then sums each metric by period.
+ *
+ * Only the metrics the form actually captures are returned. Funding,
+ * demographics, device distribution, and the collaboration network are not in
+ * Airtable and remain static on the Data page.
+ */
+export async function getEcosystemKpiTotals(): Promise<EcosystemKpiTotals> {
+  const map = await getKpiMap();
+
+  const byPeriod = new Map<string, { served: number; outreach: number; partners: number }>();
+  for (const summary of Object.values(map)) {
+    for (const rec of summary.records) {
+      const bucket = byPeriod.get(rec.period) ?? { served: 0, outreach: 0, partners: 0 };
+      bucket.served += rec.individualsServed ?? 0;
+      bucket.outreach += rec.outreachEvents ?? 0;
+      bucket.partners += rec.organizationsEngaged ?? 0;
+      byPeriod.set(rec.period, bucket);
+    }
+  }
+
+  const orderedPeriods = [...byPeriod.keys()].sort((a, b) => periodRank(a) - periodRank(b));
+  const buildSeries = (pick: (b: { served: number; outreach: number; partners: number }) => number) => {
+    const timeline = orderedPeriods.map((period) => ({
+      period: formatPeriodLabel(period),
+      count: pick(byPeriod.get(period)!),
+    }));
+    return { timeline, total: timeline.reduce((sum, point) => sum + point.count, 0) };
+  };
+
+  return {
+    individualsServed: buildSeries((b) => b.served),
+    outreachEvents: buildSeries((b) => b.outreach),
+    partnerOrganizations: buildSeries((b) => b.partners),
+  };
 }

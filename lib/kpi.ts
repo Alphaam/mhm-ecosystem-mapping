@@ -48,6 +48,22 @@ export function formatPeriodLabel(label: string): string {
   return `${year} ${half === "1" ? "Mid Year" : "Year End"}`;
 }
 
+/** One metric aggregated across every org, per reporting period, for the
+ *  ecosystem-wide Data page. `period` labels are already display-formatted. */
+export interface EcosystemMetricSeries {
+  timeline: { period: string; count: number }[];
+  total: number;
+}
+
+/** The subset of Data-page metrics that can be computed live from Airtable
+ *  responses. Everything else on that page (funding, demographics, devices,
+ *  collaboration network) is not captured in the form and stays static. */
+export interface EcosystemKpiTotals {
+  individualsServed: EcosystemMetricSeries;
+  outreachEvents: EcosystemMetricSeries;
+  partnerOrganizations: EcosystemMetricSeries;
+}
+
 export interface OrgKpiSummary {
   /** One row per reporting period, oldest first. Multiple submissions for the
    *  same period are collapsed into a single row (most recent wins). */
