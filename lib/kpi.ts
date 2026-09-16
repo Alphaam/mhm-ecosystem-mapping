@@ -36,6 +36,18 @@ export function fuzzyKey(name: string): string {
     .trim();
 }
 
+/** Turn an internal Airtable period label into the display wording the team
+ *  uses. Airtable stores "H1 2024" / "H2 2024" (kept as-is for sorting and
+ *  grouping); the UI shows "2024 Mid Year" / "2024 Year End". Anything that
+ *  doesn't match the H1/H2 pattern is shown unchanged. */
+export function formatPeriodLabel(label: string): string {
+  const m = /^\s*H([12])\s+(\d{4})\s*$/i.exec(label);
+  if (!m) return label;
+  const half = m[1];
+  const year = m[2];
+  return `${year} ${half === "1" ? "Mid Year" : "Year End"}`;
+}
+
 export interface OrgKpiSummary {
   /** One row per reporting period, oldest first. Multiple submissions for the
    *  same period are collapsed into a single row (most recent wins). */
