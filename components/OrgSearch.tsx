@@ -104,9 +104,6 @@ export function OrgSearch() {
       >
         <SearchIcon className="h-4 w-4 shrink-0" />
         <span className="hidden md:inline">Search organizations</span>
-        <kbd className="hidden items-center gap-0.5 rounded border border-border bg-secondary px-1.5 font-sans text-[10px] text-muted-foreground lg:inline-flex">
-          <span className="text-sm leading-none">⌘</span>K
-        </kbd>
       </button>
 
       {open && (
