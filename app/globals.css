@@ -70,28 +70,6 @@
   }
 }
 
-@layer components {
-  .explorer-input {
-    @apply min-h-11 min-w-0 rounded-lg border border-border/60 bg-background px-3 py-2 text-sm text-foreground shadow-sm;
-  }
-  .explorer-button {
-    @apply inline-flex min-h-10 items-center justify-center gap-2 rounded-lg border border-border/60 bg-background px-3 py-2 text-sm font-semibold text-foreground transition-colors hover:bg-accent hover:text-accent-foreground;
-  }
-  .filter-chip {
-    @apply inline-flex items-center gap-2 rounded-full bg-accent px-3 py-1.5 text-sm font-medium text-accent-foreground;
-  }
-}
-
-@layer base {
-  button, a, input, select, summary { @apply focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-ring; }
-  button:not(:disabled), summary { cursor: pointer; }
-  button:disabled { cursor: not-allowed; opacity: .5; }
-  svg [role="button"]:focus-visible { stroke: var(--primary); stroke-width: 5; outline: none; }
-  @media (prefers-reduced-motion: reduce) {
-    *, *::before, *::after { scroll-behavior: auto !important; transition-duration: 0.01ms !important; animation-duration: 0.01ms !important; }
-  }
-}
-
 @layer utilities {
   .container-wide {
     margin-left: auto;

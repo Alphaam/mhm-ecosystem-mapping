@@ -93,9 +93,6 @@ export default function MethodologyPage() {
             <em>different</em> grantee names them as a partner. A grantee&apos;s
             own category is looked up the same way, from any row elsewhere
             in the tracker where it appears as someone else&apos;s partner.
-            If no usable category is recorded, the existing dataset defaults to
-            Digital Literacy and Device Support. The explorer labels that
-            classification as inferred; it is not a verified service assessment.
           </p>
           <p className="mt-2 text-sm text-muted-foreground">
             <span className="font-medium text-foreground">
@@ -103,12 +100,10 @@ export default function MethodologyPage() {
             </span>{" "}
             An organization shows as a <strong>Current Grantee</strong> if
             any of its own rows carry the tracker&apos;s active 2026 MHM
-            Digital Equity grant flag. A recorded &quot;No&quot; is labeled
-            Past Grantee; a missing active-grant value is labeled Active Status
-            Unconfirmed in the details and directory. The filter groups these
-            latter two together. Organizations that appear only as partners are
-            labeled Partner Organizations; this does not establish their funding
-            history outside this tracker.
+            Digital Equity grant flag, a <strong>Past Grantee</strong> if
+            it&apos;s an MHM grantee without that flag, and{" "}
+            <strong>Not a Grantee</strong> for organizations that only ever
+            appear as a partner.
           </p>
         </section>
 
@@ -131,14 +126,13 @@ export default function MethodologyPage() {
             </li>
             <li>
               <span className="font-medium text-foreground">
-                Circle size
+                Border style
               </span>{" "}
-              — equal by default, without implying relative importance. The
-              Regional Partners option scales circle area by distinct recorded
-              partners in the full regional dataset, regardless of active filters.
-              A minimum circle size keeps organizations with no recorded partners
-              visible. Funding and people-served figures are shown only with
-              their reporting context in details and comparisons.
+              — solid if the tracker&apos;s own rows for that organization
+              only ever place it in this one region (its home base);
+              dashed if it also operates in other regions, so this one is
+              a secondary service area rather than a stable, spreadsheet-
+              derived &quot;headquarters.&quot;
             </li>
             <li>
               <span className="font-medium text-foreground">
@@ -150,27 +144,19 @@ export default function MethodologyPage() {
             <li>
               <span className="font-medium text-foreground">Line style</span>{" "}
               — solid for a grantee collaboration, dashed for a funding
-              relationship. More opaque lines mark a recorded
-              &quot;Strong/Active&quot; relationship; lighter lines mark
-              &quot;Weak/Existing.&quot; Heavier lines originate from current
-              grantees. Lines do not show the direction of services or money.
+              relationship; thicker and more opaque lines mark a
+              &quot;Strong/Active&quot; relationship, thinner and lighter
+              ones mark &quot;Weak/Existing.&quot;
             </li>
           </ol>
           <p className="mt-3 text-sm text-muted-foreground">
-            Hovering or focusing a node shows its name. Select a node, or
-            press Enter while it has keyboard focus, to open organization details.
-            Search and filters above the graph narrow the visible organizations
-            and connections. Details distinguish visible partners from all
-            recorded regional partners. The Directory provides a table-based
-            alternative, comparisons of up to three organizations, and CSV export.
-            Shared URLs preserve the region, filters, view, selection, and comparison.
+            Hovering a node shows its category, grantee status, service
+            location, funding amount, active-grant status, and every
+            documented connection in the current region. Filters in the
+            left panel narrow the graph to selected service categories or
+            grantee statuses — anything filtered out disappears from the
+            graph entirely, along with its connections.
           </p>
-        </section>
-
-        <section className="mt-10">
-          <h2 className="text-lg font-semibold text-foreground">Comparisons and data freshness</h2>
-          <p className="mt-2 text-sm leading-relaxed text-muted-foreground">Funding scopes and KPI reporting windows differ across organizations. The latest reported people-served value is a period count, not a deduplicated lifetime total; missing figures are shown as Not Reported, never as zero. A lack of recorded partners is a documentation gap, not evidence that an organization works alone or that services are absent. Snapshot dates describe when the dataset was generated, not when every source record was last verified. Record-level update dates are not available.</p>
-          <p className="mt-2 text-sm leading-relaxed text-muted-foreground">The Data report summarizes a 45-organization portfolio, whereas regional networks include additional partners and can include the same organization in several regions. Their totals measure different populations.</p>
         </section>
 
         <section className="mt-10 border-t border-border pt-8">
@@ -187,9 +173,10 @@ export default function MethodologyPage() {
             an organization&apos;s primary or secondary service area from
             how many distinct regions its own rows touch, which can disagree
             with what a reviewer familiar with an organization&apos;s actual
-            footprint would conclude. The explorer therefore lists regions
-            appearing in records rather than presenting a verified headquarters
-            or service-coverage map. Circle borders no longer encode that inference.
+            footprint would conclude. Goodwill Industries of San Antonio, for
+            example, appears with a secondary (dashed) border in every
+            region it&apos;s shown in under this rule, since its own rows
+            span three different regions in the current tracker.
           </p>
           <p className="mt-2 text-sm text-muted-foreground">
             <span className="font-medium text-foreground">

@@ -4,7 +4,6 @@ import { useRef } from "react";
 import Link from "next/link";
 import { HeroRegionPicker } from "@/components/HeroRegionPicker";
 import { ExecutiveSummary } from "@/components/ExecutiveSummary";
-import { ExplorerQuickStart } from "@/components/ExplorerQuickStart";
 import { buildGraph, REGIONS } from "@/lib/data";
 
 export default function HomePage() {
@@ -24,30 +23,35 @@ export default function HomePage() {
       {/* Split Hero Section */}
       <section className="relative flex min-h-screen flex-col lg:flex-row">
         {/* Left side - Content */}
-        <div className="flex flex-col justify-center px-4 py-10 sm:px-6 sm:py-12 lg:w-3/5 lg:px-10">
+        <div className="flex flex-col justify-center px-4 py-16 sm:px-6 sm:py-24">
           <div className="w-full max-w-xl">
             <p className="text-xs font-medium uppercase tracking-widest text-[var(--cobalt)]">
               MHM Digital Equity
             </p>
             <h1 className="mt-4 text-4xl font-semibold tracking-tight text-foreground sm:text-5xl">
-              Find partners. Understand the network.
+              Regional Grantee &amp; Organization Network
             </h1>
             <p className="mt-6 max-w-lg text-sm sm:text-base text-muted-foreground leading-relaxed">
-              Explore the organizations supporting digital equity across MHM’s South Texas service area. Look up an organization, trace its recorded partnerships, or compare organizations with their reporting context.
+              MHM supports an impactful network of regional grantees and organizations across its South Texas service area. Scroll below to learn more about how MHM is supporting important digital access work in the region.
             </p>
-            <ExplorerQuickStart />
-            <div className="mt-6 flex flex-wrap gap-3">
+            <div className="mt-10 flex flex-col gap-3 sm:flex-row sm:gap-4">
               <button
                 onClick={scrollToFindings}
-                className="px-1 py-2 text-sm font-semibold text-primary underline-offset-4 hover:underline"
+                className="rounded-lg bg-[var(--cobalt)] px-6 py-3 font-semibold text-white transition-colors hover:bg-[#2E3DB8] sm:px-8"
               >
                 Key Findings
               </button>
               <Link
                 href="/data"
-                className="px-1 py-2 text-sm font-semibold text-primary underline-offset-4 hover:underline"
+                className="rounded-lg border-2 border-[var(--cobalt)] px-6 py-3 font-semibold text-[var(--cobalt)] transition-colors hover:bg-[var(--cobalt)] hover:text-white sm:px-8 text-center"
               >
                 View Data
+              </Link>
+              <Link
+                href="/regions/A"
+                className="rounded-lg border-2 border-[var(--cobalt)] px-6 py-3 font-semibold text-[var(--cobalt)] transition-colors hover:bg-[var(--cobalt)] hover:text-white sm:px-8 text-center"
+              >
+                View Ecosystems
               </Link>
             </div>
           </div>
