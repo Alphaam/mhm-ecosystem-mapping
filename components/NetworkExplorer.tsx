@@ -6,13 +6,20 @@ import { NetworkGraph } from "@/components/NetworkGraph";
 import { OrganizationSelect } from "@/components/OrganizationSelect";
 import { RegionSelect } from "@/components/RegionSelect";
 import { buildGraph, CATEGORIES, REGIONS } from "@/lib/data";
+import { fuzzyKey, type OrgKpiSummary } from "@/lib/kpi";
 import type { GranteeStatus } from "@/lib/types";
 import { useRouter } from "next/navigation";
 import { useMemo, useState } from "react";
 
 const ALL_GRANTEE_STATUSES: GranteeStatus[] = ["current", "past", "not"];
 
-export function NetworkExplorer({ initialRegion }: { initialRegion: string }) {
+export function NetworkExplorer({
+  initialRegion,
+  kpiMap,
+}: {
+  initialRegion: string;
+  kpiMap: Record<string, OrgKpiSummary>;
+}) {
   const router = useRouter();
   const [regionCode, setRegionCode] = useState(initialRegion);
   const [legendMode, setLegendMode] = useState<LegendMode>("category");
@@ -29,7 +36,16 @@ export function NetworkExplorer({ initialRegion }: { initialRegion: string }) {
   // aside below ignores this state at the md breakpoint and up).
   const [panelOpen, setPanelOpen] = useState(false);
 
-  const graph = useMemo(() => buildGraph(regionCode), [regionCode]);
+  // buildGraph is pure structure (client-safe). Live KPIs come from Airtable
+  // via the server (kpiMap prop) and are attached here by the same fuzzy name
+  // key the KPI source used, so a form submission flows through to the panel.
+  const graph = useMemo(() => {
+    const built = buildGraph(regionCode);
+    return {
+      ...built,
+      nodes: built.nodes.map((n) => ({ ...n, kpi: kpiMap[fuzzyKey(n.id)] ?? null })),
+    };
+  }, [regionCode, kpiMap]);
   const activeRegion = REGIONS.find((r) => r.code === regionCode);
   const organizationNames = useMemo(
     () => graph.nodes.map((n) => n.id).sort((a, b) => a.localeCompare(b)),
