@@ -8,8 +8,15 @@ export function generateStaticParams() {
   return REGIONS.map((region) => ({ code: region.code }));
 }
 
-export default async function RegionPage({ params }: { params: Promise<{ code: string }> }) {
+export default async function RegionPage({
+  params,
+  searchParams,
+}: {
+  params: Promise<{ code: string }>;
+  searchParams: Promise<{ org?: string }>;
+}) {
   const { code } = await params;
+  const { org } = await searchParams;
   const region = REGIONS.find((r) => r.code === code.toUpperCase());
   if (!region) notFound();
 
@@ -23,5 +30,12 @@ export default async function RegionPage({ params }: { params: Promise<{ code: s
     console.error("[v0] Failed to load KPIs from Airtable:", error);
   }
 
-  return <NetworkExplorer initialRegion={region.code} kpiMap={kpiMap} />;
+  return (
+    <NetworkExplorer
+      key={region.code}
+      initialRegion={region.code}
+      initialOrg={org ?? null}
+      kpiMap={kpiMap}
+    />
+  );
 }
