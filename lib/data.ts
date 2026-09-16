@@ -1,5 +1,4 @@
 import raw from "@/data/mhm-network.json";
-import { getKpiForOrg } from "./kpi";
 import type { Graph, GraphNode, RegionMeta, TrackerDataset, TrackerRow } from "./types";
 
 const dataset = raw as TrackerDataset;
@@ -285,7 +284,11 @@ export function buildGraph(regionCode: string): Graph {
       section: krpRow ? "key_regional_player" : "relationship",
       connections,
       notes: krpRow?.notesFlags ?? null,
-      kpi: getKpiForOrg(name),
+      // KPIs are no longer baked in at build time. They come from Airtable
+      // (live, server-side) and are attached to each node by the region page
+      // / NetworkExplorer via fuzzyKey. buildGraph stays pure graph structure
+      // so it can keep running client-side without the Airtable token.
+      kpi: null,
     };
   });
 
