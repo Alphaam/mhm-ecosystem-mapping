@@ -56,7 +56,7 @@ const TOUR_STEPS: TourStep[] = [
     target: '[data-tour="panel"]',
     openPanel: true,
     title: "7. Read an organization's full profile",
-    body: "We've opened one as an example. When a circle is selected, this panel shows its service type, grantee status, funding, primary service area, live KPI reporting pulled from grantee submissions, and every connection it has in this region. Close it with the ✕ or by pressing Escape.",
+    body: "When a circle is selected, this panel shows its service type, grantee status, funding, primary service area, live KPI reporting pulled from grantee submissions, and every connection it has in this region.",
   },
   {
     title: "You're all set",
