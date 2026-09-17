@@ -117,7 +117,7 @@ export function ExecutiveSummary({ portfolioTotals }: { portfolioTotals: Portfol
               Portfolio Snapshot
             </p>
             <h2 className="mt-2 text-2xl sm:text-3xl font-semibold tracking-tight text-foreground">
-              Key Findings
+              Digital Access Impact
             </h2>
             <p className="mt-4 text-sm sm:text-base text-muted-foreground leading-relaxed">
               Since 2024, MHM has supported 45 grantee organizations working

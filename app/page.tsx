@@ -40,7 +40,7 @@ export default function HomePage() {
                 onClick={scrollToFindings}
                 className="rounded-lg bg-[var(--cobalt)] px-6 py-3 font-semibold text-white transition-colors hover:bg-[#2E3DB8] sm:px-8"
               >
-                Key Findings
+                Impact Snapshot 
               </button>
               <Link
                 href="/regions/A"
