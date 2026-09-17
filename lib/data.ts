@@ -270,35 +270,38 @@ export interface OrgIndexEntry {
 let _orgIndex: OrgIndexEntry[] | null = null;
 
 /**
- * A flat, deduplicated index of every organization across every region, for
- * the global search. An org that spans multiple regions is listed once, under
- * the region where it's "primary" (its home base) when there is one, otherwise
- * the first region it appears in. Pure graph structure — no Airtable — so it's
- * safe to build on the client. Memoized since it walks all region graphs.
- */
+* A flat index of every organization in every region it appears in, for the
+* global search. An org that spans multiple regions gets one entry per region
+* (each shows its own region label), so searching a name surfaces every place
+* you can jump to — not just its home region. Within a name, the primary/home
+* region is listed first. Pure graph structure — no Airtable — so it's safe to
+* build on the client. Memoized since it walks all region graphs.
+*/
 export function getOrganizationIndex(): OrgIndexEntry[] {
-  if (_orgIndex) return _orgIndex;
-  const byName = new Map<string, OrgIndexEntry & { primary: boolean }>();
-  for (const region of REGIONS) {
-    const { nodes } = buildGraph(region.code);
-    for (const node of nodes) {
-      const isPrimary = node.locationStatus === "primary";
-      const existing = byName.get(node.id);
-      // Keep the first hit, but upgrade to a region where this org is primary.
-      if (existing && !(isPrimary && !existing.primary)) continue;
-      byName.set(node.id, {
-        name: node.id,
-        regionCode: region.code,
-        regionLabel: region.label,
-        category: node.category,
-        primary: isPrimary,
-      });
-    }
-  }
-  _orgIndex = Array.from(byName.values())
-    .map(({ primary: _primary, ...entry }) => entry)
-    .sort((a, b) => a.name.localeCompare(b.name));
-  return _orgIndex;
+if (_orgIndex) return _orgIndex;
+const entries: (OrgIndexEntry & { primary: boolean })[] = [];
+for (const region of REGIONS) {
+const { nodes } = buildGraph(region.code);
+for (const node of nodes) {
+entries.push({
+name: node.id,
+regionCode: region.code,
+regionLabel: region.label,
+category: node.category,
+primary: node.locationStatus === "primary",
+});
+}
+}
+_orgIndex = entries
+.sort((a, b) => {
+const byName = a.name.localeCompare(b.name);
+if (byName !== 0) return byName;
+// Same org: primary/home region first, then a stable region order.
+if (a.primary !== b.primary) return a.primary ? -1 : 1;
+return a.regionCode.localeCompare(b.regionCode);
+})
+.map(({ primary: _primary, ...entry }) => entry);
+return _orgIndex;
 }
 
 /**
