@@ -59,6 +59,7 @@ HEADER_MAP = {
     "newVsExisting": "New vs. Existing",
     "notesFlags": "Notes / Flags",
     "activeGrant2026": "Active Grant (2026)?",
+    "otherMhmGranteeStatus": "Other MHM Grantee Status",
 }
 
 REGION_RE = re.compile(r"^Region ([A-L])\b")

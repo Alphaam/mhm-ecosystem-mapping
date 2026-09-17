@@ -27,6 +27,10 @@ export interface TrackerRow {
   newVsExisting: string | null;
   notesFlags: string | null;
   activeGrant2026: string | null;
+  /** Whether this row's ORGANIZATION holds an MHM grant outside the Digital
+   *  Equity program, e.g. from a health-focused grant theme. Independent of
+   *  `isGrantee`/`activeGrant2026`, which are specific to Digital Equity. */
+  otherMhmGranteeStatus: "Grantee" | "Non Grantee" | string | null;
   section: TrackerSection;
   sourceRow: number;
   regionCode: string | null;
@@ -77,6 +81,10 @@ export interface GraphNode {
    *  (e.g. "MHM Digital Equity Program" vs. an all-MHM-programs total). */
   fundingSourceLabel: string | null;
   activeGrant: string | null;
+  /** Whether this org holds an MHM grant outside the Digital Equity program
+   *  (e.g. a health-focused grant), independent of its Digital Equity
+   *  grantee status above. Null if the tracker doesn't say. */
+  otherMhmGrantee: boolean | null;
   primaryRegionCodes: string[];
   secondaryRegionCodes: string[];
   section: TrackerSection;

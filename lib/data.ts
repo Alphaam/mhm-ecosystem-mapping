@@ -109,6 +109,19 @@ function lookupSubsector(name: string): string {
   return GRANTEE_DEFAULT_SUBSECTOR;
 }
 
+/** Whether `name` holds an MHM grant outside the Digital Equity program,
+ *  found the same way `lookupSubsector` finds a category: from any row
+ *  where it appears as the "Organization" column, since that's where this
+ *  is recorded. Null if the tracker never says either way for this name. */
+function lookupOtherMhmGrantee(name: string): boolean | null {
+  for (const row of ALL_ROWS) {
+    if (row.organization === name && row.otherMhmGranteeStatus) {
+      return row.otherMhmGranteeStatus === "Grantee";
+    }
+  }
+  return null;
+}
+
 interface FundingInfo {
   amount: string;
   year: string | null;
@@ -417,6 +430,7 @@ export function buildGraph(regionCode: string): Graph {
       fundingYear: funding?.year ?? null,
       fundingSourceLabel: funding?.sourceLabel ?? null,
       activeGrant: lookupActiveGrant(name),
+      otherMhmGrantee: lookupOtherMhmGrantee(name),
       primaryRegionCodes: Array.from(touchedRegions),
       secondaryRegionCodes: Array.from(secondaryRegions),
       section: krpRow ? "key_regional_player" : "relationship",

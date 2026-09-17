@@ -1,8 +1,12 @@
 "use client";
 
+import { useState } from "react";
+import { RelationshipsTable } from "@/components/RelationshipsTable";
 import { reportData } from "@/lib/report-data";
-import type { EcosystemKpiTotals } from "@/lib/kpi";
+import type { EcosystemKpiTotals, OrgKpiSummary } from "@/lib/kpi";
 import { BarChart, Bar, LineChart, Line, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts";
+
+type DataView = "charts" | "relationships";
 
 const COLORS = ["#3C4ED6", "#5563E1", "#7080E8", "#8B9DEF", "#A6BAF6"];
 const COLORS_ACCENT = ["#FF6B6B", "#FFA550", "#FFD93D", "#6BCB77", "#4D96FF"];
@@ -16,7 +20,15 @@ function LiveBadge() {
   );
 }
 
-export function DataDashboard({ live }: { live: EcosystemKpiTotals | null }) {
+export function DataDashboard({
+  live,
+  kpiMap,
+}: {
+  live: EcosystemKpiTotals | null;
+  kpiMap: Record<string, OrgKpiSummary>;
+}) {
+  const [view, setView] = useState<DataView>("charts");
+
   // Sections wired to Airtable fall back to the static report snapshot if the
   // live fetch fails or returns nothing, so the page never renders empty.
   const hasLive = (series?: EcosystemKpiTotals["individualsServed"]) =>
@@ -50,6 +62,46 @@ export function DataDashboard({ live }: { live: EcosystemKpiTotals | null }) {
           </p>
         </div>
 
+        {/* View toggle */}
+        <div className="mb-10 flex items-center gap-1 rounded-lg border border-gray-200 bg-white p-1 text-sm w-fit">
+          <button
+            type="button"
+            onClick={() => setView("charts")}
+            aria-pressed={view === "charts"}
+            className={`rounded-md px-4 py-2 font-medium transition-colors ${
+              view === "charts" ? "bg-[var(--cobalt)] text-white" : "text-gray-600 hover:bg-gray-100"
+            }`}
+          >
+            Charts
+          </button>
+          <button
+            type="button"
+            onClick={() => setView("relationships")}
+            aria-pressed={view === "relationships"}
+            className={`rounded-md px-4 py-2 font-medium transition-colors ${
+              view === "relationships" ? "bg-[var(--cobalt)] text-white" : "text-gray-600 hover:bg-gray-100"
+            }`}
+          >
+            Relationships Table
+          </button>
+        </div>
+
+        {view === "relationships" && (
+          <section className="mb-16">
+            <h2 className="text-2xl font-semibold text-[var(--raisin)] mb-2">
+              Grantee &amp; Organization Relationships
+            </h2>
+            <p className="text-gray-600 mb-6">
+              The same relationships shown in the ecosystem maps, one row per
+              grantee-organization pair. Click a name to open its detail
+              panel.
+            </p>
+            <RelationshipsTable kpiMap={kpiMap} />
+          </section>
+        )}
+
+        {view === "charts" && (
+          <>
         {/* Portfolio Overview */}
         <section className="mb-16">
           <h2 className="text-2xl font-semibold text-[var(--raisin)] mb-6">
@@ -425,6 +477,8 @@ export function DataDashboard({ live }: { live: EcosystemKpiTotals | null }) {
             </div>
           </div>
         </section>
+          </>
+        )}
       </div>
     </main>
   );
