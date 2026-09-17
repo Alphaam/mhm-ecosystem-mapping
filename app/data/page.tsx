@@ -1,6 +1,6 @@
 import { DataDashboard } from "@/components/DataDashboard";
-import { getEcosystemKpiTotals } from "@/lib/kpi-source";
-import type { EcosystemKpiTotals } from "@/lib/kpi";
+import { getEcosystemKpiTotals, getKpiMap } from "@/lib/kpi-source";
+import type { EcosystemKpiTotals, OrgKpiSummary } from "@/lib/kpi";
 
 // Live KPI sections (Individuals Served, Program Engagement) come from Airtable
 // via the shared "kpi" cache tag, purged by the form-submission webhook. The
@@ -14,5 +14,12 @@ export default async function DataPage() {
     live = null;
   }
 
-  return <DataDashboard live={live} />;
+  let kpiMap: Record<string, OrgKpiSummary> = {};
+  try {
+    kpiMap = await getKpiMap();
+  } catch {
+    kpiMap = {};
+  }
+
+  return <DataDashboard live={live} kpiMap={kpiMap} />;
 }

@@ -5,7 +5,7 @@ import Link from "next/link";
 import { HeroRegionPicker } from "@/components/HeroRegionPicker";
 import { RegionMap } from "@/components/RegionMap";
 import { ExecutiveSummary } from "@/components/ExecutiveSummary";
-import { buildGraph, REGIONS } from "@/lib/data";
+import { buildGraph, getPortfolioTotals, REGIONS } from "@/lib/data";
 
 export default function HomePage() {
   const findingsRef = useRef<HTMLElement>(null);
@@ -14,6 +14,7 @@ export default function HomePage() {
     ...region,
     orgCount: buildGraph(region.code).nodes.length,
   }));
+  const portfolioTotals = getPortfolioTotals();
 
   const scrollToFindings = () => {
     findingsRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -22,7 +23,15 @@ export default function HomePage() {
   return (
     <main className="h-full flex-1 overflow-y-auto">
       {/* Split Hero Section */}
-      <section className="relative flex min-h-screen flex-col lg:flex-row">
+      <section className="relative flex min-h-screen flex-col border-b border-border lg:flex-row">
+        {/* Image - shown above content on mobile, on the right on desktop */}
+        <div className="relative order-first h-56 w-full sm:h-72 lg:order-last lg:h-screen lg:flex-1">
+          <div
+            className="absolute inset-0 bg-cover bg-center"
+            style={{ backgroundImage: "url(/images/hero-background.jpg)" }}
+          />
+        </div>
+
         {/* Left side - Content */}
         <div className="flex flex-col justify-center px-4 py-16 sm:px-6 sm:py-24">
           <div className="w-full max-w-xl">
@@ -40,36 +49,28 @@ export default function HomePage() {
                 onClick={scrollToFindings}
                 className="rounded-lg bg-[var(--cobalt)] px-6 py-3 font-semibold text-white transition-colors hover:bg-[#2E3DB8] sm:px-8"
               >
-                Key Findings
+                Impact Snapshot 
               </button>
-              <Link
-                href="/data"
-                className="rounded-lg border-2 border-[var(--cobalt)] px-6 py-3 font-semibold text-[var(--cobalt)] transition-colors hover:bg-[var(--cobalt)] hover:text-white sm:px-8 text-center"
-              >
-                View Data
-              </Link>
               <Link
                 href="/regions/A"
                 className="rounded-lg border-2 border-[var(--cobalt)] px-6 py-3 font-semibold text-[var(--cobalt)] transition-colors hover:bg-[var(--cobalt)] hover:text-white sm:px-8 text-center"
               >
                 View Ecosystems
               </Link>
+              <Link
+                href="/data"
+                className="rounded-lg border-2 border-[var(--cobalt)] px-6 py-3 font-semibold text-[var(--cobalt)] transition-colors hover:bg-[var(--cobalt)] hover:text-white sm:px-8 text-center"
+              >
+                View Data
+              </Link>
             </div>
           </div>
-        </div>
-
-        {/* Right side - Image */}
-        <div className="relative hidden h-screen lg:flex lg:flex-1 lg:items-center lg:justify-center">
-          <div
-            className="absolute inset-0 bg-cover bg-center"
-            style={{ backgroundImage: "url(/images/hero-background.jpg)" }}
-          />
         </div>
       </section>
 
       {/* Key Findings Section */}
       <section ref={findingsRef}>
-        <ExecutiveSummary />
+        <ExecutiveSummary portfolioTotals={portfolioTotals} />
       </section>
 
       {/* Ecosystem Diagrams Section */}

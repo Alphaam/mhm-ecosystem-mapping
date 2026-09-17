@@ -5,6 +5,7 @@ export type TrackerSection = "relationship" | "key_regional_player";
 export interface TrackerRow {
   grantee: string | null;
   organization: string;
+  organizationCounty: string | null;
   isGrantee: "Yes" | "No" | string | null;
   confirmationStatus: string | null;
   relationshipType: "Grantee Collaboration" | "Funding Relationship" | string | null;
@@ -14,6 +15,7 @@ export interface TrackerRow {
   region: string | null;
   additionalRegions: string | null;
   regionSourceJustification: string | null;
+  granteeRegion: string | null;
   primaryServiceCategory: string | null;
   categoryConfidence: string | null;
   categoryJustification: string | null;
@@ -25,10 +27,22 @@ export interface TrackerRow {
   newVsExisting: string | null;
   notesFlags: string | null;
   activeGrant2026: string | null;
+  /** Whether this row's ORGANIZATION holds an MHM grant outside the Digital
+   *  Equity program, e.g. from a health-focused grant theme. Independent of
+   *  `isGrantee`/`activeGrant2026`, which are specific to Digital Equity. */
+  otherMhmGranteeStatus: "Grantee" | "Non Grantee" | string | null;
   section: TrackerSection;
   sourceRow: number;
   regionCode: string | null;
   additionalRegionCodes: string[];
+  /** The GRANTEE's own home region (distinct from `regionCode`, which is the
+   *  ORGANIZATION's region) — needed so a grantee funding a partner in a
+   *  different region doesn't get pulled into that partner's region graph. */
+  granteeRegionCode: string | null;
+  /** A grantee that genuinely serves more than one region (e.g. a "Region
+   *  A/B" grantee), mirroring how `additionalRegionCodes` works for the
+   *  organization side. Usually empty. */
+  granteeAdditionalRegionCodes: string[];
 }
 
 export interface RegionMeta {
@@ -67,6 +81,10 @@ export interface GraphNode {
    *  (e.g. "MHM Digital Equity Program" vs. an all-MHM-programs total). */
   fundingSourceLabel: string | null;
   activeGrant: string | null;
+  /** Whether this org holds an MHM grant outside the Digital Equity program
+   *  (e.g. a health-focused grant), independent of its Digital Equity
+   *  grantee status above. Null if the tracker doesn't say. */
+  otherMhmGrantee: boolean | null;
   primaryRegionCodes: string[];
   secondaryRegionCodes: string[];
   section: TrackerSection;
