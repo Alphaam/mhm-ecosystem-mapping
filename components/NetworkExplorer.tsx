@@ -10,7 +10,7 @@ import { buildGraph, CATEGORIES, REGIONS } from "@/lib/data";
 import { fuzzyKey, type OrgKpiSummary } from "@/lib/kpi";
 import type { GranteeStatus } from "@/lib/types";
 import { useRouter } from "next/navigation";
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 
 const ALL_GRANTEE_STATUSES: GranteeStatus[] = ["current", "past", "not"];
 
@@ -20,7 +20,7 @@ const TOUR_SESSION_KEY = "mhm-ecosystem-tour-seen-session";
 const TOUR_STEPS: TourStep[] = [
   {
     title: "Welcome to the Ecosystem Map",
-    body: "This map shows how MHM's Digital Equity grantees and their partner organizations connect across a region. Take a 30-second tour, or skip it anytime — you can reopen it from the “How to use” button.",
+    body: "This map shows how MHM's Digital Equity grantees and their partner organizations connect across a region. Take a 30-second tour, or skip it anytime. You can reopen it later from the “How to use” button.",
   },
   {
     target: '[data-tour="region"]',
@@ -40,7 +40,7 @@ const TOUR_STEPS: TourStep[] = [
   {
     target: '[data-tour="legend"]',
     title: "4. Read the map's key",
-    body: "Lines show relationships: solid = grantee collaboration, dashed = funding. Thicker/darker lines are active relationships, thin ones are existing. A ringed circle is an MHM grantee; a filled circle is a partner organization.",
+    body: "Lines show relationships: a solid line is a grantee collaboration and a dashed line is funding. Thicker, darker lines are active relationships; thin ones are existing. A ringed circle is an MHM grantee, and a filled circle is a partner organization.",
   },
   {
     target: '[data-tour="size-mode"]',
@@ -53,8 +53,14 @@ const TOUR_STEPS: TourStep[] = [
     body: "Every circle is an organization. Click one to focus it and bold its connections. Drag circles to rearrange them, and scroll to zoom in and out.",
   },
   {
-    title: "That's it — you're ready",
-    body: "When you select an organization, a panel opens on the right with its service type, funding, primary service area, live KPI reporting from grantee submissions, and every connection it has in this region. Happy exploring!",
+    target: '[data-tour="panel"]',
+    openPanel: true,
+    title: "7. Read an organization's full profile",
+    body: "We've opened one as an example. When a circle is selected, this panel shows its service type, grantee status, funding, primary service area, live KPI reporting pulled from grantee submissions, and every connection it has in this region. Close it with the ✕ or by pressing Escape.",
+  },
+  {
+    title: "You're all set",
+    body: "That's everything. Pick a region, explore the circles, and open any organization to dig into its details. Happy exploring!",
   },
 ];
 
@@ -129,6 +135,28 @@ export function NetworkExplorer({
   const organizationNames = useMemo(
     () => graph.nodes.map((n) => n.id).sort((a, b) => a.localeCompare(b)),
     [graph],
+  );
+
+  // A representative node for the tour's "read the panel" step: prefer one
+  // with live KPI data (richest panel), then any grantee, then anything.
+  const exampleOrg = useMemo(() => {
+    const withKpi = graph.nodes.find((n) => n.kpi);
+    if (withKpi) return withKpi.id;
+    const grantee = graph.nodes.find((n) => n.isGrantee);
+    if (grantee) return grantee.id;
+    return graph.nodes[0]?.id ?? null;
+  }, [graph]);
+
+  // Drive host state as the tour advances: the panel step needs a selected
+  // node so the detail panel exists for the tour to spotlight.
+  const handleTourStep = useCallback(
+    (i: number) => {
+      if (TOUR_STEPS[i]?.openPanel && exampleOrg) {
+        setFocusOrgId(exampleOrg);
+        setSelectedOrgName(exampleOrg);
+      }
+    },
+    [exampleOrg],
   );
 
   function handleRegionChange(code: string) {
@@ -266,6 +294,7 @@ export function NetworkExplorer({
         steps={TOUR_STEPS}
         storageKey={TOUR_DISMISS_KEY}
         onClose={() => setTourOpen(false)}
+        onStepChange={handleTourStep}
       />
     </div>
   );

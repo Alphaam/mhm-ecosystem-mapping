@@ -688,7 +688,7 @@ function NameTooltip({ x, y, name }: { x: number; y: number; name: string }) {
 
 function OrganizationPanel({ node, onClose }: { node: GraphNode; onClose: () => void }) {
   return (
-    <div className="absolute top-3 right-3 bottom-3 z-10 w-64 overflow-y-auto rounded-lg bg-popover p-3 text-xs text-popover-foreground shadow-lg ring-1 ring-foreground/10 sm:w-72">
+    <div data-tour="panel" className="absolute top-3 right-3 bottom-3 z-10 w-64 overflow-y-auto rounded-lg bg-popover p-3 text-xs text-popover-foreground shadow-lg ring-1 ring-foreground/10 sm:w-72">
       <div className="flex items-start justify-between gap-2">
         <div className="text-sm font-semibold text-foreground">{node.id}</div>
         <button

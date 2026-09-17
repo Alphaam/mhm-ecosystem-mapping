@@ -8,6 +8,10 @@ export interface TourStep {
   target?: string;
   title: string;
   body: string;
+  /** Marks a step whose target only exists once the host opens something
+   *  (e.g. the organization detail panel). The host reacts via onStepChange;
+   *  the tour itself just retries measuring until the target appears. */
+  openPanel?: boolean;
 }
 
 const CARD_WIDTH = 340;
@@ -65,12 +69,17 @@ export function GuidedTour({
   steps,
   storageKey,
   onClose,
+  onStepChange,
 }: {
   open: boolean;
   steps: TourStep[];
   /** localStorage key that records a permanent "don't show again" opt-out. */
   storageKey: string;
   onClose: () => void;
+  /** Fires with the active step index whenever the visible step changes (and
+   *  when the tour opens), so the host can prepare that step's target — e.g.
+   *  selecting a node so the detail panel exists to be spotlighted. */
+  onStepChange?: (index: number) => void;
 }) {
   const [index, setIndex] = useState(0);
   const [rect, setRect] = useState<DOMRect | null>(null);
@@ -90,6 +99,11 @@ export function GuidedTour({
     }
   }, [open]);
 
+  // Let the host prepare the active step's target (e.g. open the detail panel).
+  useEffect(() => {
+    if (open) onStepChange?.(index);
+  }, [open, index, onStepChange]);
+
   const finish = useCallback(() => {
     if (dontShow) {
       try {
@@ -106,6 +120,11 @@ export function GuidedTour({
   useLayoutEffect(() => {
     if (!open) return;
     let raf = 0;
+    let retryTimer = 0;
+    // A step's target may mount asynchronously — the detail panel only exists
+    // after the host selects a node for this step. Retry briefly before
+    // falling back to a centered card, so the spotlight lands once it appears.
+    let retries = 0;
 
     const measure = () => {
       if (!step?.target) {
@@ -115,6 +134,11 @@ export function GuidedTour({
       }
       const el = document.querySelector(step.target);
       if (!el) {
+        if (retries < 25) {
+          retries += 1;
+          retryTimer = window.setTimeout(measure, 60);
+          return;
+        }
         setRect(null);
         setPlacement(centeredPlacement());
         return;
@@ -133,6 +157,7 @@ export function GuidedTour({
     window.addEventListener("scroll", measure, true);
     return () => {
       cancelAnimationFrame(raf);
+      window.clearTimeout(retryTimer);
       window.removeEventListener("resize", measure);
       window.removeEventListener("scroll", measure, true);
     };
