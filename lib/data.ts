@@ -109,6 +109,19 @@ function lookupSubsector(name: string): string {
   return GRANTEE_DEFAULT_SUBSECTOR;
 }
 
+/** Whether `name` holds an MHM grant outside the Digital Equity program,
+ *  found the same way `lookupSubsector` finds a category: from any row
+ *  where it appears as the "Organization" column, since that's where this
+ *  is recorded. Null if the tracker never says either way for this name. */
+function lookupOtherMhmGrantee(name: string): boolean | null {
+  for (const row of ALL_ROWS) {
+    if (row.organization === name && row.otherMhmGranteeStatus) {
+      return row.otherMhmGranteeStatus === "Grantee";
+    }
+  }
+  return null;
+}
+
 interface FundingInfo {
   amount: string;
   year: string | null;
@@ -162,11 +175,19 @@ function lookupFunding(name: string): FundingInfo | null {
   };
 }
 
-/** Prefers a specific county/city the tracker cites for this org (checking its
- *  own "Organization"-role rows first, since that's where locations are
- *  written up in detail), falling back to the current region's label when
- *  the tracker doesn't cite one for it. */
+/** Prefers the org's own "Organization County" field (checking its own
+ *  "Organization"-role rows), since that's kept up to date alongside its
+ *  region. Falls back to a free-text "Location Cited in Source" quote only
+ *  when no county is on file — that field is a per-row citation from
+ *  whichever partner mentioned the org, and can go stale after a region
+ *  correction (e.g. La Union del Pueblo Entero's region was corrected to
+ *  Region J, but an old partner's row still cited "San Antonio / Central
+ *  Texas area" for it). Falls back to the current region's label if the
+ *  tracker doesn't cite anything for it. */
 function lookupServiceArea(name: string, regionLabel: string): string {
+  for (const row of ALL_ROWS) {
+    if (row.organization === name && row.organizationCounty) return `${row.organizationCounty} County`;
+  }
   for (const row of ALL_ROWS) {
     if (row.organization === name && row.locationCited) return row.locationCited;
   }
@@ -223,9 +244,19 @@ function granteeStatusFor(name: string, isGrantee: boolean): GraphNode["granteeS
  * the one region diagram they're shown in.
  */
 function isSingleRegionOrg(name: string): boolean {
-  const ownRows = ALL_ROWS.filter((row) => row.grantee === name);
-  const rowsCarryingLocation = ownRows.length > 0 ? ownRows : ALL_ROWS.filter((row) => row.organization === name);
-  const regions = new Set(rowsCarryingLocation.map((row) => row.regionCode).filter((code): code is string => !!code));
+  const ownGranteeRows = ALL_ROWS.filter((row) => row.grantee === name);
+  if (ownGranteeRows.length > 0) {
+    const regions = new Set(
+      ownGranteeRows
+        .flatMap((row) => [row.granteeRegionCode, ...row.granteeAdditionalRegionCodes])
+        .filter((code): code is string => !!code),
+    );
+    return regions.size <= 1;
+  }
+  const ownOrgRows = ALL_ROWS.filter((row) => row.organization === name);
+  const regions = new Set(
+    ownOrgRows.flatMap((row) => [row.regionCode, ...row.additionalRegionCodes]).filter((code): code is string => !!code),
+  );
   return regions.size <= 1;
 }
 
@@ -273,23 +304,101 @@ return a.regionCode.localeCompare(b.regionCode);
 return _orgIndex;
 }
 
+/**
+ * True if `row`'s ORGANIZATION serves `regionCode` (its own region or one of
+ * its additional regions).
+ */
+function organizationServesRegion(row: TrackerRow, regionCode: string): boolean {
+  return row.regionCode === regionCode || row.additionalRegionCodes.includes(regionCode);
+}
+
+/**
+ * True if `row`'s GRANTEE serves `regionCode` (its own region or one of its
+ * additional regions, for a grantee that genuinely serves more than one).
+ */
+function granteeServesRegion(row: TrackerRow, regionCode: string): boolean {
+  return row.granteeRegionCode === regionCode || row.granteeAdditionalRegionCodes.includes(regionCode);
+}
+
+/** Higher is stronger; unset/unrecognized strength sorts last. */
+function relationshipStrengthRank(strength: string | null): number {
+  if (strength === "Strong/Active") return 2;
+  if (strength === "Weak/Existing") return 1;
+  return 0;
+}
+
+/**
+ * The tracker records one row per source document that mentions a
+ * grantee-organization pair, so the same real-world relationship often has
+ * several rows (e.g. one from the 2025 Year-End survey, one from the 2026
+ * Mid-Year survey, one from an older tab) — sometimes disagreeing on
+ * strength. Collapses a group of rows for the same pair down to the single
+ * best one: whichever reports the strongest relationship, and among ties,
+ * whichever appears latest in the tracker (later rows are where more recent
+ * corrections/updates tend to land).
+ */
+function pickBestRow(rows: TrackerRow[]): TrackerRow {
+  return rows.reduce((best, row) => {
+    const rank = relationshipStrengthRank(row.relationshipStrength);
+    const bestRank = relationshipStrengthRank(best.relationshipStrength);
+    if (rank > bestRank) return row;
+    if (rank === bestRank && row.sourceRow > best.sourceRow) return row;
+    return best;
+  });
+}
+
+/** Groups rows by a key, then keeps only the best row from each group. */
+function dedupeRows(rows: TrackerRow[], keyOf: (row: TrackerRow) => string): TrackerRow[] {
+  const groups = new Map<string, TrackerRow[]>();
+  for (const row of rows) {
+    const key = keyOf(row);
+    const group = groups.get(key);
+    if (group) group.push(row);
+    else groups.set(key, [row]);
+  }
+  return Array.from(groups.values()).map(pickBestRow);
+}
+
 export function buildGraph(regionCode: string): Graph {
-  const regionalRows = ALL_ROWS.filter((row) => row.regionCode === regionCode);
   const regionLabel = REGIONS.find((r) => r.code === regionCode)?.label ?? regionCode;
 
+  // A name belongs in this region if ITS OWN role-appropriate rows say so:
+  // an organization via its organization-role rows, a grantee via its
+  // grantee-role rows. This is judged independent of whoever else appears
+  // on that row, so a grantee (or partner org) still shows up in its own
+  // home region even when every one of its documented relationships happens
+  // to be with a counterpart based somewhere else — e.g. a Region D grantee
+  // whose only tracked partners are Region J organizations still belongs on
+  // Region D's map.
   const names = new Set<string>();
-  for (const row of regionalRows) {
-    if (row.grantee) names.add(row.grantee);
-    names.add(row.organization);
+  for (const row of ALL_ROWS) {
+    if (organizationServesRegion(row, regionCode)) names.add(row.organization);
+    if (row.grantee && granteeServesRegion(row, regionCode)) names.add(row.grantee);
   }
+
+  // A relationship only draws a link (and shows as a "connection" on either
+  // node) in this region if BOTH parties are themselves region members.
+  // Otherwise a grantee's partnership with an out-of-region organization
+  // would incorrectly pull that organization's own node into this region's
+  // graph — e.g. La Union del Pueblo Entero (Region J) funding a
+  // partnership with digitalLIFT (Region D) doesn't mean LUPE provides
+  // service in Region D, so that relationship shouldn't render there even
+  // though digitalLIFT itself does.
+  const regionalRows = ALL_ROWS.filter(
+    (row) => names.has(row.organization) && (!row.grantee || names.has(row.grantee)),
+  );
 
   const nodes: GraphNode[] = Array.from(names).map((name) => {
     const touchedRegions = new Set<string>();
     const secondaryRegions = new Set<string>();
     for (const row of ALL_ROWS) {
-      if (row.grantee !== name && row.organization !== name) continue;
-      if (row.regionCode) touchedRegions.add(row.regionCode);
-      for (const code of row.additionalRegionCodes) secondaryRegions.add(code);
+      if (row.grantee === name) {
+        if (row.granteeRegionCode) touchedRegions.add(row.granteeRegionCode);
+        for (const code of row.granteeAdditionalRegionCodes) secondaryRegions.add(code);
+      } else if (row.organization === name) {
+        if (row.regionCode) touchedRegions.add(row.regionCode);
+        for (const code of row.additionalRegionCodes) secondaryRegions.add(code);
+      }
     }
     const krpRow = regionalRows.find(
       (row) => row.organization === name && row.section === "key_regional_player",
@@ -299,14 +408,15 @@ export function buildGraph(regionCode: string): Graph {
       : lookupSubsector(name);
     const category = mapCategory(subsector);
 
-    const connections: GraphNode["connections"] = regionalRows
-      .filter((row) => row.grantee === name || row.organization === name)
-      .map((row) => ({
-        other: row.grantee === name ? row.organization : (row.grantee ?? "Unknown"),
-        direction: row.grantee === name ? "outgoing" : "incoming",
-        relationshipType: row.relationshipType,
-        relationshipStrength: row.relationshipStrength,
-      }));
+    const ownConnectionRows = regionalRows.filter((row) => row.grantee === name || row.organization === name);
+    const connections: GraphNode["connections"] = dedupeRows(ownConnectionRows, (row) =>
+      row.grantee === name ? row.organization : (row.grantee ?? "Unknown"),
+    ).map((row) => ({
+      other: row.grantee === name ? row.organization : (row.grantee ?? "Unknown"),
+      direction: row.grantee === name ? "outgoing" : "incoming",
+      relationshipType: row.relationshipType,
+      relationshipStrength: row.relationshipStrength,
+    }));
 
     const isGrantee = isGranteeAnywhere(name);
     const funding = lookupFunding(name);
@@ -323,6 +433,7 @@ export function buildGraph(regionCode: string): Graph {
       fundingYear: funding?.year ?? null,
       fundingSourceLabel: funding?.sourceLabel ?? null,
       activeGrant: lookupActiveGrant(name),
+      otherMhmGrantee: lookupOtherMhmGrantee(name),
       primaryRegionCodes: Array.from(touchedRegions),
       secondaryRegionCodes: Array.from(secondaryRegions),
       section: krpRow ? "key_regional_player" : "relationship",
@@ -336,15 +447,53 @@ export function buildGraph(regionCode: string): Graph {
     };
   });
 
-  const links = regionalRows
-    .filter((row) => !!row.grantee)
-    .map((row) => ({
-      source: row.grantee as string,
-      target: row.organization,
-      relationshipType: row.relationshipType,
-      relationshipStrength: row.relationshipStrength,
-      row,
-    }));
+  const linkRows = dedupeRows(
+    regionalRows.filter((row) => !!row.grantee),
+    (row) => `${row.grantee}::${row.organization}`,
+  );
+  const links = linkRows.map((row) => ({
+    source: row.grantee as string,
+    target: row.organization,
+    relationshipType: row.relationshipType,
+    relationshipStrength: row.relationshipStrength,
+    row,
+  }));
 
   return { nodes, links };
+}
+
+export interface PortfolioTotals {
+  /** Distinct orgs that have ever been an MHM Digital Equity grantee. */
+  granteeCount: number;
+  /** Distinct partner orgs that are never themselves a grantee. */
+  partnerOrgCount: number;
+  /** Distinct grantee-partner relationships, counted once even if the pair
+   *  shows up in more than one region (e.g. a multi-region grantee). */
+  relationshipCount: number;
+}
+
+let _portfolioTotals: PortfolioTotals | null = null;
+
+/**
+ * Portfolio-wide counts used on the homepage's Key Findings section. These
+ * are computed from the same region graphs the network pages render (not a
+ * separately hand-maintained figure), so they can't drift out of sync with
+ * what the ecosystem maps actually show the way a hardcoded number can.
+ */
+export function getPortfolioTotals(): PortfolioTotals {
+  if (_portfolioTotals) return _portfolioTotals;
+  const grantees = new Set<string>();
+  const partners = new Set<string>();
+  const relationships = new Set<string>();
+  for (const region of REGIONS) {
+    const { nodes, links } = buildGraph(region.code);
+    for (const node of nodes) (node.isGrantee ? grantees : partners).add(node.id);
+    for (const link of links) relationships.add(`${link.source}::${link.target}`);
+  }
+  _portfolioTotals = {
+    granteeCount: grantees.size,
+    partnerOrgCount: partners.size,
+    relationshipCount: relationships.size,
+  };
+  return _portfolioTotals;
 }

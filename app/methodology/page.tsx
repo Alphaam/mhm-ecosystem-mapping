@@ -1,5 +1,5 @@
 export const metadata = {
-  title: "Methodology & Data Sources — MHM Regional Network",
+  title: "Methodology & Data Sources | MHM Regional Network",
 };
 
 function Source({ children }: { children: React.ReactNode }) {
@@ -14,96 +14,49 @@ export default function MethodologyPage() {
           Methodology &amp; Data Sources
         </p>
         <h1 className="mt-2 text-3xl font-semibold tracking-tight text-foreground sm:text-4xl">
-          How this dashboard is built
+          What this dashboard shows
         </h1>
-        <p className="mt-4 text-sm text-muted-foreground sm:text-base">
-          HR&amp;A took Methodist Healthcare Ministries&apos; (MHM) own
-          tracking of its Digital Equity grantees&apos; partnerships,
-          standardized and enriched it, and rendered it as an interactive
-          network so a region&apos;s collaboration landscape — who works with
-          whom, how actively, and around what service — can be read at a
-          glance instead of scanned row by row in a spreadsheet.
+        <p className="mt-4 text-sm text-muted-foreground sm:text-base border-b border-border pb-8">
+          This dashboard is built from Methodist Healthcare Ministries&apos;
+          (MHM) own tracking of its Digital Equity grantees and their
+          partnerships. It turns that tracking into an interactive network
+          so a region&apos;s collaboration landscape (who works with whom,
+          how actively, and around what service) can be read at a glance
+          instead of scanned row by row in a spreadsheet.
         </p>
 
         <section className="mt-10">
           <h2 className="text-lg font-semibold text-foreground">
-            Source data
+            Collaboration network
           </h2>
           <p className="mt-2 text-sm text-muted-foreground">
-            The tracker records two kinds of rows for each of MHM&apos;s
-            designated regions across its 76-county South Texas service
-            area: documented{" "}
+            For each of MHM&apos;s designated regions across its 76-county
+            South Texas service area, the network shows two kinds of
+            organizations: an MHM Digital Equity{" "}
+            <span className="font-medium text-foreground">grantee</span> and
+            the{" "}
             <span className="font-medium text-foreground">
-              grantee–organization relationships
+              partner organizations
             </span>{" "}
-            (an MHM Digital Equity grantee and a partner it collaborates or
-            shares funding with, evidenced by a grant report, site-visit
-            note, or public source), and{" "}
+            it collaborates or shares funding with, each backed by a grant
+            report, site-visit note, or public source. A region can also
+            include{" "}
             <span className="font-medium text-foreground">
               Key Regional Players
-            </span>{" "}
-            — additional MHM-funded or notable organizations in a region
-            with no documented direct collaboration yet, added from MHM&apos;s
-            Comm Impact ledger or, where that wasn&apos;t available, from
-            public web and organization-site research.
+            </span>
+            , organizations MHM funds or considers notable in that region
+            with no documented direct collaboration yet.
           </p>
           <p className="mt-2 text-sm text-muted-foreground">
-            Each relationship row carries a relationship type (grantee
-            collaboration vs. funding relationship), a strength rating,
-            a primary service category, a region assignment, and — for
-            grantees — a funding amount and whether they hold an active
-            2026 MHM Digital Equity grant.
-          </p>
-          <Source>
-            Source: MHM Collaborations Tracker — Final.xlsx, Master
-            Grantee-Org Sheet (v4)
-          </Source>
-        </section>
-
-        <section className="mt-10">
-          <h2 className="text-lg font-semibold text-foreground">
-            From spreadsheet to dataset
-          </h2>
-          <p className="mt-2 text-sm text-muted-foreground">
-            A one-time export script reads both sections of the tracker,
-            parses each row&apos;s free-text region field into a region
-            code, and writes a static dataset the dashboard reads directly —
-            re-run whenever the tracker is updated.
-          </p>
-          <p className="mt-2 text-sm text-muted-foreground">
-            <span className="font-medium text-foreground">
-              Name cleanup.
-            </span>{" "}
-            The same organization sometimes appears under slightly
-            different spellings across rows (&quot;Boys and Girls Clubs of
-            Laredo&quot; vs. &quot;Boys &amp; Girls Clubs of Laredo&quot;, or
-            a grantee name with a program name appended in parentheses).
-            These are automatically collapsed onto one canonical name,
-            chosen as whichever spelling appears most often in the tracker
-            — so a partnership isn&apos;t split across two near-duplicate
-            nodes.
-          </p>
-          <p className="mt-2 text-sm text-muted-foreground">
-            <span className="font-medium text-foreground">
-              Service category.
-            </span>{" "}
-            The tracker&apos;s &quot;Primary Service Category&quot; column
-            describes whoever is in the <em>Organization</em> column of that
-            row — for a grantee, that&apos;s only recorded on rows where a{" "}
-            <em>different</em> grantee names them as a partner. A grantee&apos;s
-            own category is looked up the same way, from any row elsewhere
-            in the tracker where it appears as someone else&apos;s partner.
-          </p>
-          <p className="mt-2 text-sm text-muted-foreground">
-            <span className="font-medium text-foreground">
-              Grantee status.
-            </span>{" "}
-            An organization shows as a <strong>Current Grantee</strong> if
-            any of its own rows carry the tracker&apos;s active 2026 MHM
-            Digital Equity grant flag, a <strong>Past Grantee</strong> if
-            it&apos;s an MHM grantee without that flag, and{" "}
-            <strong>Not a Grantee</strong> for organizations that only ever
-            appear as a partner.
+            Each documented relationship carries a type (grantee
+            collaboration vs. funding relationship), a strength rating
+            (&quot;Strong/Active&quot; or &quot;Weak/Existing&quot;), a
+            primary service category, and, for grantees, a funding amount
+            and whether they hold an active 2026 MHM Digital Equity grant.
+            Where the same relationship has been documented more than once,
+            for example once in a mid-year survey and again at year end,
+            the dashboard shows it as a single connection and uses whichever
+            report describes the stronger relationship.
           </p>
         </section>
 
@@ -112,50 +65,85 @@ export default function MethodologyPage() {
             Reading the network
           </h2>
           <p className="mt-2 text-sm text-muted-foreground">
-            Each region renders as a force-directed graph: nodes pull toward
-            organizations they&apos;re connected to and push away from
-            everything else, so tightly-collaborating clusters group
-            together and unconnected organizations settle toward the edges.
-            Node position carries no geographic meaning — it&apos;s purely a
-            function of the graph&apos;s connections, not a map.
+            Each region renders as a force-directed graph. Nodes pull
+            toward organizations they&apos;re connected to and push away
+            from everything else, so tightly collaborating clusters group
+            together and unconnected organizations settle toward the
+            edges. Node position carries no geographic meaning. It&apos;s
+            purely a function of the graph&apos;s connections, not a map.
+          </p>
+          <p className="mt-2 text-sm text-muted-foreground">
+            An organization&apos;s grantee status, used for both the legend
+            and the border weight below, is <strong>Current Grantee</strong>{" "}
+            if it holds an active 2026 MHM Digital Equity grant,{" "}
+            <strong>Past Grantee</strong> if it&apos;s an MHM grantee
+            without that active flag, and <strong>Not a Grantee</strong> for
+            an organization that only ever appears as a partner.
           </p>
           <ol className="mt-3 flex flex-col gap-3 text-sm text-muted-foreground">
             <li>
               <span className="font-medium text-foreground">Fill color</span>{" "}
-              — primary service category.
+              shows primary service category by default. Switching the
+              legend to &quot;Grantee status&quot; recolors every node by
+              whether it&apos;s a current grantee, a past grantee, or not a
+              grantee instead.
             </li>
             <li>
               <span className="font-medium text-foreground">
                 Border style
               </span>{" "}
-              — solid if the tracker&apos;s own rows for that organization
-              only ever place it in this one region (its home base);
-              dashed if it also operates in other regions, so this one is
-              a secondary service area rather than a stable, spreadsheet-
-              derived &quot;headquarters.&quot;
+              is solid if this is the only region where the organization
+              (or, for a grantee, the grantee itself) is on record as
+              operating, and dashed if it also operates in other regions,
+              so this region is one of several rather than a single home
+              base.
             </li>
             <li>
               <span className="font-medium text-foreground">
                 Border weight
               </span>{" "}
-              — thicker for an MHM grantee, thinner for a partner
+              is thicker for an MHM grantee and thinner for a partner
               organization that has never itself been an MHM grantee.
             </li>
             <li>
               <span className="font-medium text-foreground">Line style</span>{" "}
-              — solid for a grantee collaboration, dashed for a funding
-              relationship; thicker and more opaque lines mark a
-              &quot;Strong/Active&quot; relationship, thinner and lighter
+              is solid for a grantee collaboration and dashed for a funding
+              relationship. Thicker, more opaque lines mark a
+              &quot;Strong/Active&quot; relationship; thinner, lighter
               ones mark &quot;Weak/Existing.&quot;
             </li>
           </ol>
           <p className="mt-3 text-sm text-muted-foreground">
-            Hovering a node shows its category, grantee status, service
-            location, funding amount, active-grant status, and every
-            documented connection in the current region. Filters in the
-            left panel narrow the graph to selected service categories or
-            grantee statuses — anything filtered out disappears from the
-            graph entirely, along with its connections.
+            Clicking a node opens a panel with its category, grantee
+            status, funding amount, active-grant status, KPI reporting (see
+            below), and every documented connection in the current region.
+            Clicking a connection in that list jumps to that
+            organization&apos;s own node. Filters in the left panel narrow
+            the graph to selected service categories or grantee statuses;
+            anything filtered out disappears from the graph entirely, along
+            with its connections.
+          </p>
+        </section>
+
+        <section className="mt-10">
+          <h2 className="text-lg font-semibold text-foreground">
+            KPI reporting
+          </h2>
+          <p className="mt-2 text-sm text-muted-foreground">
+            Grantees fill out a short survey each reporting period (a
+            &quot;mid-year&quot; and a &quot;year-end&quot; survey), and
+            those responses feed a &quot;KPI Reporting&quot; section in the
+            organization panel for every grantee that has one on file: a
+            lifetime total of individuals served, the most recently
+            reported period&apos;s figure, and a period-by-period table
+            covering individuals served, outreach events, and digital
+            navigator sessions.
+          </p>
+          <p className="mt-2 text-sm text-muted-foreground">
+            These figures come in live, not from the same tracker export as
+            the network itself, so a new survey submission can show up on
+            the dashboard within the hour without anyone having to update
+            anything by hand.
           </p>
         </section>
 
@@ -167,16 +155,17 @@ export default function MethodologyPage() {
             <span className="font-medium text-foreground">
               &quot;Home region&quot; is inferred, not stated.
             </span>{" "}
-            The tracker doesn&apos;t record a stable headquarters region for
-            each organization — its region field describes where a specific
-            relationship happened. This dashboard infers whether a region is
-            an organization&apos;s primary or secondary service area from
-            how many distinct regions its own rows touch, which can disagree
-            with what a reviewer familiar with an organization&apos;s actual
-            footprint would conclude. Goodwill Industries of San Antonio, for
-            example, appears with a secondary (dashed) border in every
-            region it&apos;s shown in under this rule, since its own rows
-            span three different regions in the current tracker.
+            The tracker records a region for the organization side of a
+            row and a separate region for the grantee side, but it
+            doesn&apos;t flag a single one of those as an organization&apos;s
+            permanent headquarters. This dashboard infers whether a region
+            is an organization&apos;s home base by checking every row where
+            it appears in that same role (as the grantee, or as the
+            partner organization) and seeing whether they all point to one
+            region or several. This can disagree with what someone
+            familiar with the organization&apos;s actual footprint would
+            say, particularly for an organization the tracker has only
+            documented once or twice.
           </p>
           <p className="mt-2 text-sm text-muted-foreground">
             <span className="font-medium text-foreground">
@@ -194,18 +183,9 @@ export default function MethodologyPage() {
               partnership&apos;s.
             </span>{" "}
             The dollar figure shown for a grantee is its own reported MHM
-            award (Digital Equity theme where available, otherwise
-            all-program total) — it isn&apos;t attributable to any single
+            award (Digital Equity theme where available, otherwise the
+            all-program total). It isn&apos;t attributable to any single
             partnership shown on the graph.
-          </p>
-          <p className="mt-2 text-sm text-muted-foreground">
-            <span className="font-medium text-foreground">
-              This is a working analytical tool, not a finalized deliverable.
-            </span>{" "}
-            It reflects the tracker at a point in time and hasn&apos;t been
-            through project-manager review — treat it as a way to explore
-            the underlying data, not as a citable, client-ready output on
-            its own.
           </p>
         </section>
       </div>

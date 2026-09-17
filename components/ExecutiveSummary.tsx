@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import type { PortfolioTotals } from "@/lib/data";
 
 type StatCategory = {
   name: string;
@@ -11,44 +12,50 @@ type StatCategory = {
   stats: { value: string; label: string }[];
 };
 
-const CATEGORIES: StatCategory[] = [
-  {
-    name: "Portfolio",
-    colorVar: "--cobalt",
-    bgClass: "bg-blue-50",
-    borderClass: "border-blue-200",
-    textClass: "text-[var(--cobalt)]",
-    stats: [
-      { value: "45", label: "Total organizations" },
-      { value: "35", label: "Active grants (2026)" },
-      { value: "10", label: "Historical/closed grants" },
-      { value: "53", label: "Ecosystem partners" },
-    ],
-  },
-  {
-    name: "Funding",
-    colorVar: "--teal",
-    bgClass: "bg-teal-50",
-    borderClass: "border-teal-200",
-    textClass: "text-[var(--teal)]",
-    stats: [
-      { value: "$22.5M", label: "Digital Equity funding awarded" },
-      { value: "64", label: "Tracked ecosystem relationships" },
-    ],
-  },
-  {
-    name: "Reach & Impact",
-    colorVar: "--gold",
-    bgClass: "bg-amber-50",
-    borderClass: "border-amber-200",
-    textClass: "text-[var(--gold)]",
-    stats: [
-      { value: "78.7K", label: "Individuals served (total)" },
-      { value: "79K", label: "Individuals served since 2024" },
-      { value: "32.4K", label: "Devices distributed" },
-    ],
-  },
-];
+/** "Ecosystem partners" and "Tracked ecosystem relationships" are computed
+ *  from the live region graphs (via `portfolioTotals`), not hardcoded, so
+ *  they can't drift out of sync with what the ecosystem maps actually show
+ *  the way a hand-maintained figure can. */
+function buildCategories(portfolioTotals: PortfolioTotals): StatCategory[] {
+  return [
+    {
+      name: "Portfolio",
+      colorVar: "--cobalt",
+      bgClass: "bg-blue-50",
+      borderClass: "border-blue-200",
+      textClass: "text-[var(--cobalt)]",
+      stats: [
+        { value: "45", label: "Total organizations" },
+        { value: "35", label: "Active grants (2026)" },
+        { value: "10", label: "Historical/closed grants" },
+        { value: String(portfolioTotals.partnerOrgCount), label: "Ecosystem partners" },
+      ],
+    },
+    {
+      name: "Funding",
+      colorVar: "--teal",
+      bgClass: "bg-teal-50",
+      borderClass: "border-teal-200",
+      textClass: "text-[var(--teal)]",
+      stats: [
+        { value: "$22.5M", label: "Digital Equity funding awarded" },
+        { value: String(portfolioTotals.relationshipCount), label: "Tracked ecosystem relationships" },
+      ],
+    },
+    {
+      name: "Reach & Impact",
+      colorVar: "--gold",
+      bgClass: "bg-amber-50",
+      borderClass: "border-amber-200",
+      textClass: "text-[var(--gold)]",
+      stats: [
+        { value: "78.7K", label: "Individuals served (total)" },
+        { value: "79K", label: "Individuals served since 2024" },
+        { value: "32.4K", label: "Devices distributed" },
+      ],
+    },
+  ];
+}
 
 function StatCard({
   value,
@@ -98,7 +105,8 @@ function StatCard({
   );
 }
 
-export function ExecutiveSummary() {
+export function ExecutiveSummary({ portfolioTotals }: { portfolioTotals: PortfolioTotals }) {
+  const categories = buildCategories(portfolioTotals);
   return (
     <section className="bg-white px-4 py-16 sm:px-6 sm:py-20">
       <div className="container-wide">
@@ -109,17 +117,40 @@ export function ExecutiveSummary() {
               Portfolio Snapshot
             </p>
             <h2 className="mt-2 text-2xl sm:text-3xl font-semibold tracking-tight text-foreground">
-              Key Findings
+              Digital Access Impact
             </h2>
             <p className="mt-4 text-sm sm:text-base text-muted-foreground leading-relaxed">
-              This analysis of MHM&apos;s portfolio, funding, and reach
-              identified findings that inform the ecosystem map.
+              Since 2024, MHM has supported 45 grantee organizations working
+              on digital equity across its South Texas service area, 35
+              with an active grant today and another 10 whose grants have
+              since closed. These grantees don&apos;t work alone: the
+              network they&apos;ve built out also includes{" "}
+              {portfolioTotals.partnerOrgCount} partner organizations, from
+              libraries and school districts to health clinics and
+              community groups, connected through{" "}
+              {portfolioTotals.relationshipCount} documented relationships
+              across the region. That reach extends well beyond MHM&apos;s
+              own grant dollars into a much wider regional ecosystem.
+            </p>
+            <p className="mt-4 text-sm sm:text-base text-muted-foreground leading-relaxed">
+              Together, this network has served nearly 79,000 individuals
+              since 2024, nearly tripling its first year&apos;s reach,
+              largely by putting devices directly into people&apos;s hands:
+              over 32,400 laptops, hotspots, smartphones, and other devices
+              distributed to date. Human I-T is one meaningfully impactful example grantee. Alongside the
+              City of Pharr and Compudopt, it&apos;s one of three grantees
+              that account for nearly half of all program spending,
+              refurbishing and distributing devices to residents who
+              otherwise couldn&apos;t get online.
+            </p>
+                        <p className="mt-4 text-sm sm:text-base text-muted-foreground leading-relaxed">
+      MHM continues to anchor, lead, and promote digital access services throughout the 74-county South Texas region. 
             </p>
           </div>
 
           {/* Right side - Categories */}
           <div className="space-y-10">
-            {CATEGORIES.map((category) => (
+            {categories.map((category) => (
               <div key={category.name}>
                 <div className="mb-4 flex items-center gap-2">
                   <span

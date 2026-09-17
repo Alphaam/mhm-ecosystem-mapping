@@ -17,16 +17,16 @@ export function SiteHeader() {
           <nav className="flex items-center gap-1 sm:gap-2">
             <OrgSearch />
             <Link
-              href="/data"
-              className="shrink-0 rounded-full px-2.5 py-1.5 text-xs whitespace-nowrap text-foreground/80 transition-colors hover:bg-accent hover:text-foreground sm:px-4 sm:py-2 sm:text-sm"
-            >
-              Data
-            </Link>
-            <Link
               href="/regions/A"
               className="shrink-0 rounded-full px-2.5 py-1.5 text-xs whitespace-nowrap text-foreground/80 transition-colors hover:bg-accent hover:text-foreground sm:px-4 sm:py-2 sm:text-sm"
             >
               Ecosystem
+            </Link>
+            <Link
+              href="/data"
+              className="shrink-0 rounded-full px-2.5 py-1.5 text-xs whitespace-nowrap text-foreground/80 transition-colors hover:bg-accent hover:text-foreground sm:px-4 sm:py-2 sm:text-sm"
+            >
+              Data
             </Link>
             <Link
               href="/methodology"
