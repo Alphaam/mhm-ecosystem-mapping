@@ -4,7 +4,7 @@ import { useRef } from "react";
 import Link from "next/link";
 import { HeroRegionPicker } from "@/components/HeroRegionPicker";
 import { ExecutiveSummary } from "@/components/ExecutiveSummary";
-import { buildGraph, REGIONS } from "@/lib/data";
+import { buildGraph, getPortfolioTotals, REGIONS } from "@/lib/data";
 
 export default function HomePage() {
   const findingsRef = useRef<HTMLElement>(null);
@@ -13,6 +13,7 @@ export default function HomePage() {
     ...region,
     orgCount: buildGraph(region.code).nodes.length,
   }));
+  const portfolioTotals = getPortfolioTotals();
 
   const scrollToFindings = () => {
     findingsRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -42,16 +43,16 @@ export default function HomePage() {
                 Key Findings
               </button>
               <Link
-                href="/data"
-                className="rounded-lg border-2 border-[var(--cobalt)] px-6 py-3 font-semibold text-[var(--cobalt)] transition-colors hover:bg-[var(--cobalt)] hover:text-white sm:px-8 text-center"
-              >
-                View Data
-              </Link>
-              <Link
                 href="/regions/A"
                 className="rounded-lg border-2 border-[var(--cobalt)] px-6 py-3 font-semibold text-[var(--cobalt)] transition-colors hover:bg-[var(--cobalt)] hover:text-white sm:px-8 text-center"
               >
                 View Ecosystems
+              </Link>
+              <Link
+                href="/data"
+                className="rounded-lg border-2 border-[var(--cobalt)] px-6 py-3 font-semibold text-[var(--cobalt)] transition-colors hover:bg-[var(--cobalt)] hover:text-white sm:px-8 text-center"
+              >
+                View Data
               </Link>
             </div>
           </div>
@@ -68,7 +69,7 @@ export default function HomePage() {
 
       {/* Key Findings Section */}
       <section ref={findingsRef}>
-        <ExecutiveSummary />
+        <ExecutiveSummary portfolioTotals={portfolioTotals} />
       </section>
 
       {/* Ecosystem Diagrams Section */}

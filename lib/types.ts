@@ -5,6 +5,7 @@ export type TrackerSection = "relationship" | "key_regional_player";
 export interface TrackerRow {
   grantee: string | null;
   organization: string;
+  organizationCounty: string | null;
   isGrantee: "Yes" | "No" | string | null;
   confirmationStatus: string | null;
   relationshipType: "Grantee Collaboration" | "Funding Relationship" | string | null;
@@ -14,6 +15,7 @@ export interface TrackerRow {
   region: string | null;
   additionalRegions: string | null;
   regionSourceJustification: string | null;
+  granteeRegion: string | null;
   primaryServiceCategory: string | null;
   categoryConfidence: string | null;
   categoryJustification: string | null;
@@ -29,6 +31,14 @@ export interface TrackerRow {
   sourceRow: number;
   regionCode: string | null;
   additionalRegionCodes: string[];
+  /** The GRANTEE's own home region (distinct from `regionCode`, which is the
+   *  ORGANIZATION's region) — needed so a grantee funding a partner in a
+   *  different region doesn't get pulled into that partner's region graph. */
+  granteeRegionCode: string | null;
+  /** A grantee that genuinely serves more than one region (e.g. a "Region
+   *  A/B" grantee), mirroring how `additionalRegionCodes` works for the
+   *  organization side. Usually empty. */
+  granteeAdditionalRegionCodes: string[];
 }
 
 export interface RegionMeta {

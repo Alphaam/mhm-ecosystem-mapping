@@ -7,7 +7,7 @@ import {
   GRANTEE_LINK_WIDTH,
   opacityForRelationshipStrength,
 } from "@/lib/colors";
-import { GRANTEE_STATUS_LABELS, LOCATION_STATUS_LABELS, relationshipStrengthLabel } from "@/lib/labels";
+import { GRANTEE_STATUS_LABELS, relationshipStrengthLabel } from "@/lib/labels";
 import { formatPeriodLabel, type OrgKpiSummary } from "@/lib/kpi";
 import type { Graph, GraphNode } from "@/lib/types";
 import * as d3 from "d3";
@@ -638,7 +638,13 @@ export function NetworkGraph({
       <svg ref={svgRef} viewBox={`0 0 ${WIDTH} ${HEIGHT}`} className="h-full w-full" />
       <SizeModeToggle value={sizeMode} onChange={setSizeMode} />
       {hover && <NameTooltip x={hover.x} y={hover.y} name={hover.name} />}
-      {selectedNode && <OrganizationPanel node={selectedNode} onClose={() => setSelectedNode(null)} />}
+      {selectedNode && (
+        <OrganizationPanel
+          node={selectedNode}
+          onClose={() => setSelectedNode(null)}
+          onSelectConnection={(id) => focusNodeRef.current(id)}
+        />
+      )}
     </div>
   );
 }
@@ -686,7 +692,15 @@ function NameTooltip({ x, y, name }: { x: number; y: number; name: string }) {
   );
 }
 
-function OrganizationPanel({ node, onClose }: { node: GraphNode; onClose: () => void }) {
+function OrganizationPanel({
+  node,
+  onClose,
+  onSelectConnection,
+}: {
+  node: GraphNode;
+  onClose: () => void;
+  onSelectConnection: (id: string) => void;
+}) {
   return (
     <div className="absolute top-3 right-3 bottom-3 z-10 w-64 overflow-y-auto rounded-lg bg-popover p-3 text-xs text-popover-foreground shadow-lg ring-1 ring-foreground/10 sm:w-72">
       <div className="flex items-start justify-between gap-2">
@@ -708,7 +722,6 @@ function OrganizationPanel({ node, onClose }: { node: GraphNode; onClose: () => 
         {node.fundingYear && <Row label="Funding Year" value={node.fundingYear} />}
         {node.fundingSourceLabel && <Row label="Funding Source" value={node.fundingSourceLabel} />}
         <Row label="Primary Service Area" value={node.serviceArea} />
-        <Row label="Service Location" value={LOCATION_STATUS_LABELS[node.locationStatus]} />
       </dl>
       {node.kpi && <KpiSection kpi={node.kpi} />}
       {node.connections.length > 0 && (
@@ -716,10 +729,28 @@ function OrganizationPanel({ node, onClose }: { node: GraphNode; onClose: () => 
           <div className="mb-1 font-medium text-foreground">Connections in this region</div>
           <ul className="space-y-1">
             {node.connections.map((c, i) => (
-              <li key={i} className="text-muted-foreground">
-                {c.direction === "outgoing" ? "→ " : "← "}
-                {c.other}
-                <span className="text-muted-foreground/70"> ({relationshipStrengthLabel(c.relationshipStrength)})</span>
+              <li key={i}>
+                <button
+                  type="button"
+                  onClick={() => onSelectConnection(c.other)}
+                  className="flex w-full items-center justify-between gap-2 rounded px-1 py-0.5 text-left text-muted-foreground hover:bg-accent hover:text-foreground"
+                >
+                  <span className="flex items-center gap-1.5 truncate">
+                    <span
+                      className={`shrink-0 rounded-full px-1.5 py-0.5 text-[10px] font-medium leading-none ${
+                        c.direction === "outgoing"
+                          ? "bg-primary/15 text-primary"
+                          : "bg-secondary text-secondary-foreground"
+                      }`}
+                    >
+                      {c.direction === "outgoing" ? "As grantee" : "As partner"}
+                    </span>
+                    <span className="truncate">{c.other}</span>
+                  </span>
+                  <span className="shrink-0 text-[11px] text-muted-foreground/70">
+                    {relationshipStrengthLabel(c.relationshipStrength)}
+                  </span>
+                </button>
               </li>
             ))}
           </ul>
