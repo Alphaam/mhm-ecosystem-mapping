@@ -1,5 +1,4 @@
 import raw from "@/data/mhm-network.json";
-import { getKpiForOrg } from "./kpi";
 import type { Graph, GraphNode, RegionMeta, TrackerDataset, TrackerRow } from "./types";
 
 const dataset = raw as TrackerDataset;
@@ -230,6 +229,47 @@ function isSingleRegionOrg(name: string): boolean {
   return regions.size <= 1;
 }
 
+export interface OrgIndexEntry {
+  name: string;
+  regionCode: string;
+  regionLabel: string;
+  category: string;
+}
+
+let _orgIndex: OrgIndexEntry[] | null = null;
+
+/**
+ * A flat, deduplicated index of every organization across every region, for
+ * the global search. An org that spans multiple regions is listed once, under
+ * the region where it's "primary" (its home base) when there is one, otherwise
+ * the first region it appears in. Pure graph structure — no Airtable — so it's
+ * safe to build on the client. Memoized since it walks all region graphs.
+ */
+export function getOrganizationIndex(): OrgIndexEntry[] {
+  if (_orgIndex) return _orgIndex;
+  const byName = new Map<string, OrgIndexEntry & { primary: boolean }>();
+  for (const region of REGIONS) {
+    const { nodes } = buildGraph(region.code);
+    for (const node of nodes) {
+      const isPrimary = node.locationStatus === "primary";
+      const existing = byName.get(node.id);
+      // Keep the first hit, but upgrade to a region where this org is primary.
+      if (existing && !(isPrimary && !existing.primary)) continue;
+      byName.set(node.id, {
+        name: node.id,
+        regionCode: region.code,
+        regionLabel: region.label,
+        category: node.category,
+        primary: isPrimary,
+      });
+    }
+  }
+  _orgIndex = Array.from(byName.values())
+    .map(({ primary: _primary, ...entry }) => entry)
+    .sort((a, b) => a.name.localeCompare(b.name));
+  return _orgIndex;
+}
+
 export function buildGraph(regionCode: string): Graph {
   const regionalRows = ALL_ROWS.filter((row) => row.regionCode === regionCode);
   const regionLabel = REGIONS.find((r) => r.code === regionCode)?.label ?? regionCode;
@@ -285,7 +325,11 @@ export function buildGraph(regionCode: string): Graph {
       section: krpRow ? "key_regional_player" : "relationship",
       connections,
       notes: krpRow?.notesFlags ?? null,
-      kpi: getKpiForOrg(name),
+      // KPIs are no longer baked in at build time. They come from Airtable
+      // (live, server-side) and are attached to each node by the region page
+      // / NetworkExplorer via fuzzyKey. buildGraph stays pure graph structure
+      // so it can keep running client-side without the Airtable token.
+      kpi: null,
     };
   });
 

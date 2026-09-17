@@ -8,7 +8,7 @@ import {
   opacityForRelationshipStrength,
 } from "@/lib/colors";
 import { GRANTEE_STATUS_LABELS, LOCATION_STATUS_LABELS, relationshipStrengthLabel } from "@/lib/labels";
-import type { OrgKpiSummary } from "@/lib/kpi";
+import { formatPeriodLabel, type OrgKpiSummary } from "@/lib/kpi";
 import type { Graph, GraphNode } from "@/lib/types";
 import * as d3 from "d3";
 import { useEffect, useRef, useState } from "react";
@@ -741,7 +741,7 @@ function KpiSection({ kpi }: { kpi: OrgKpiSummary }) {
         <Row label="Individuals Served (lifetime)" value={kpi.totalIndividualsServed.toLocaleString()} />
         {kpi.latestPeriod && (
           <Row
-            label={`Latest Reported (${kpi.latestPeriod})`}
+            label={`Latest Reported (${formatPeriodLabel(kpi.latestPeriod)})`}
             value={(kpi.latestIndividualsServed ?? 0).toLocaleString()}
           />
         )}
@@ -759,7 +759,7 @@ function KpiSection({ kpi }: { kpi: OrgKpiSummary }) {
           <tbody>
             {kpi.records.map((r) => (
               <tr key={r.period} className="border-t border-border/60">
-                <td className="py-0.5 text-foreground">{r.period}</td>
+                <td className="py-0.5 text-foreground">{formatPeriodLabel(r.period)}</td>
                 <td className="py-0.5 text-right text-foreground">{r.individualsServed ?? "—"}</td>
                 <td className="py-0.5 text-right text-foreground">{r.outreachEvents ?? "—"}</td>
                 <td className="py-0.5 text-right text-foreground">{r.connectorSessions ?? "—"}</td>
