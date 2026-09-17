@@ -137,11 +137,14 @@ export function ExecutiveSummary({ portfolioTotals }: { portfolioTotals: Portfol
               since 2024, nearly tripling its first year&apos;s reach,
               largely by putting devices directly into people&apos;s hands:
               over 32,400 laptops, hotspots, smartphones, and other devices
-              distributed to date. Human I-T is one example. Alongside
+              distributed to date. Human I-T is one meaningfully impactful example grantee. Alongside the
               City of Pharr and Compudopt, it&apos;s one of three grantees
               that account for nearly half of all program spending,
               refurbishing and distributing devices to residents who
               otherwise couldn&apos;t get online.
+            </p>
+                        <p className="mt-4 text-sm sm:text-base text-muted-foreground leading-relaxed">
+      MHM continues to anchor, lead, and promote digital access services throughout the 74-county South Texas region. 
             </p>
           </div>
 

@@ -23,7 +23,7 @@ export default function HomePage() {
   return (
     <main className="h-full flex-1 overflow-y-auto">
       {/* Split Hero Section */}
-      <section className="relative flex min-h-screen flex-col lg:flex-row">
+      <section className="relative flex min-h-screen flex-col border-b border-border lg:flex-row">
         {/* Image - shown above content on mobile, on the right on desktop */}
         <div className="relative order-first h-56 w-full sm:h-72 lg:order-last lg:h-screen lg:flex-1">
           <div
