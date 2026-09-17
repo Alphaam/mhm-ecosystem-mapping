@@ -250,15 +250,19 @@ export function GuidedTour({
           </div>
 
           <div className="mt-4 flex items-center justify-between gap-3">
-            <label className="flex cursor-pointer items-center gap-1.5 text-xs text-muted-foreground">
-              <input
-                type="checkbox"
-                checked={dontShow}
-                onChange={(e) => setDontShow(e.target.checked)}
-                className="h-3.5 w-3.5 rounded border-border accent-[var(--primary)]"
-              />
-              Don&apos;t show again
-            </label>
+            {isFirst ? (
+              <label className="flex cursor-pointer items-center gap-1.5 text-xs text-muted-foreground">
+                <input
+                  type="checkbox"
+                  checked={dontShow}
+                  onChange={(e) => setDontShow(e.target.checked)}
+                  className="h-3.5 w-3.5 rounded border-border accent-[var(--primary)]"
+                />
+                Don&apos;t show again
+              </label>
+            ) : (
+              <span />
+            )}
 
             <div className="flex items-center gap-2">
               {!isFirst && (
