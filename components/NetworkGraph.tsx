@@ -416,17 +416,14 @@ export function NetworkGraph({
       .data(nodes)
       .join("circle")
       .attr("r", (d) => radius(d.id))
-      .attr("fill", fillColor)
-      // Unconnected grantees read as "open/detached": a translucent fill so
-      // the service-type color still shows through, but the node no longer
-      // looks solid like its linked peers.
-      .attr("fill-opacity", (d) => (isUnconnectedGrantee(d) ? 0.45 : 1))
-      .attr("stroke", "var(--foreground)")
-      .attr("stroke-width", (d) => (d.isGrantee ? 2.5 : 0.75))
+      // Unconnected grantees render hollow: the body is the page background so
+      // the dot looks "empty / detached", while a thick ring in the service-type
+      // color keeps its category readable. Connected grantees and partner orgs
+      // stay solid-filled.
+      .attr("fill", (d) => (isUnconnectedGrantee(d) ? "var(--background)" : fillColor(d)))
+      .attr("stroke", (d) => (isUnconnectedGrantee(d) ? fillColor(d) : "var(--foreground)"))
+      .attr("stroke-width", (d) => (isUnconnectedGrantee(d) ? 3.5 : d.isGrantee ? 2.5 : 0.75))
       .attr("stroke-opacity", (d) => (d.isGrantee ? 1 : 0.4))
-      // Dashed ring marks an unconnected grantee; connected grantees keep the
-      // solid ring, partner orgs keep their thin solid ring.
-      .attr("stroke-dasharray", (d) => (isUnconnectedGrantee(d) ? "3,3" : null))
       .style("cursor", "pointer")
       .call(
         d3

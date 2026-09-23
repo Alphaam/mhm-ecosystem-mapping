@@ -40,12 +40,10 @@ export function Legend() {
             <circle
               cx="8"
               cy="8"
-              r="6"
-              fill="var(--foreground)"
-              fillOpacity={0.45}
+              r="5.5"
+              fill="var(--background)"
               stroke="var(--foreground)"
-              strokeWidth={2}
-              strokeDasharray="3,3"
+              strokeWidth={2.5}
             />
           </svg>
           <span className="text-foreground/80">Unconnected grantee (no relationships in region)</span>
