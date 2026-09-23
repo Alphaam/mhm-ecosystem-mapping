@@ -37,13 +37,12 @@ export function Legend() {
         </h3>
         <div className="flex items-center gap-1.5 py-0.5">
           <svg width="16" height="16" className="shrink-0" aria-hidden="true">
-            <circle
-              cx="8"
-              cy="8"
-              r="5.5"
-              fill="var(--background)"
+            <path
+              d="M8,2 L14,8 L8,14 L2,8 Z"
+              fill="var(--foreground)"
               stroke="var(--foreground)"
-              strokeWidth={2.5}
+              strokeWidth={1.5}
+              strokeLinejoin="round"
             />
           </svg>
           <span className="text-foreground/80">Unconnected grantee (no relationships in region)</span>

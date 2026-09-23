@@ -415,16 +415,17 @@ export function NetworkGraph({
       .selectAll<SVGCircleElement, SimNode>("circle")
       .data(nodes)
       .join("circle")
-      .attr("r", (d) => radius(d.id))
-      // Unconnected grantees render hollow: the body is the page background so
-      // the dot looks "empty / detached", while a thick ring in the service-type
-      // color keeps its category readable. Connected grantees and partner orgs
-      // stay solid-filled.
-      .attr("fill", (d) => (isUnconnectedGrantee(d) ? "var(--background)" : fillColor(d)))
-      .attr("stroke", (d) => (isUnconnectedGrantee(d) ? fillColor(d) : "var(--foreground)"))
-      .attr("stroke-width", (d) => (isUnconnectedGrantee(d) ? 3.5 : d.isGrantee ? 2.5 : 0.75))
+      // Unconnected grantees are drawn as a diamond marker overlaid below, so
+      // here their circle is kept invisible but still full-size to serve as the
+      // click/hover/drag hit target (slightly enlarged to cover the diamond's
+      // corners). Everyone else is a normal solid dot.
+      .attr("r", (d) => (isUnconnectedGrantee(d) ? radius(d.id) * 1.3 : radius(d.id)))
+      .attr("fill", (d) => (isUnconnectedGrantee(d) ? "transparent" : fillColor(d)))
+      .attr("stroke", (d) => (isUnconnectedGrantee(d) ? "none" : "var(--foreground)"))
+      .attr("stroke-width", (d) => (d.isGrantee ? 2.5 : 0.75))
       .attr("stroke-opacity", (d) => (d.isGrantee ? 1 : 0.4))
       .style("cursor", "pointer")
+      .style("pointer-events", "all")
       .call(
         d3
           .drag<SVGCircleElement, SimNode>()
@@ -468,6 +469,28 @@ export function NetworkGraph({
       .on("mouseleave", function () {
         setHover(null);
       });
+
+    // Unconnected grantees get a diamond marker instead of a circle. Shape is
+    // the one visual channel not already in use here (color = service type,
+    // ring = grantee vs. partner), so a diamond amid the circles pops out
+    // immediately and reads as "flagged / stands apart" without muddying the
+    // other encodings. It keeps the service-type fill so its category is still
+    // legible. The marker is drawn above the (now-invisible) hit-target circle
+    // and is repositioned every tick.
+    const unconnectedMarker = root
+      .append("g")
+      .attr("pointer-events", "none")
+      .selectAll<SVGPathElement, SimNode>("path")
+      .data(nodes.filter(isUnconnectedGrantee))
+      .join("path")
+      .attr("d", (d) => {
+        const s = radius(d.id) * 1.3;
+        return `M0,${-s}L${s},0L0,${s}L${-s},0Z`;
+      })
+      .attr("fill", (d) => fillColor(d))
+      .attr("stroke", "var(--foreground)")
+      .attr("stroke-width", 1.75)
+      .attr("stroke-linejoin", "round");
 
     // Clicking empty canvas (not a node) clears the selection/highlight and
     // closes the organization panel; Escape does the same from anywhere.
@@ -617,6 +640,7 @@ export function NetworkGraph({
       });
 
       node.attr("cx", (d) => d.x).attr("cy", (d) => d.y);
+      unconnectedMarker.attr("transform", (d) => `translate(${d.x},${d.y})`);
       labelGroup.attr("transform", (d) => `translate(${d.x},${d.y})`);
     });
 
