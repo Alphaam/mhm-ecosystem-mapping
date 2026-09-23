@@ -165,12 +165,15 @@ export function NetworkGraph({
       degree.set(link.target, (degree.get(link.target) ?? 0) + 1);
     }
 
-    // A grantee with no relationship edges in this region — funded, but not
-    // linked to any other grantee or organization here. These otherwise look
-    // identical to well-connected grantees (color only encodes service type),
-    // so they get a distinct dashed, translucent ring below to make their
-    // isolation visible at a glance.
-    const isUnconnectedGrantee = (d: GraphNode) => d.isGrantee && (degree.get(d.id) ?? 0) === 0;
+    // A node with no relationship edge drawn in this region — it isn't linked
+    // to any other grantee or organization here. Color only encodes service
+    // type, so without a marker these isolated nodes look identical to
+    // well-connected ones. They get the diamond marker below to make their
+    // isolation obvious at a glance. This applies to grantees AND partner orgs
+    // alike (e.g. a Key Regional Player noted for the region but with no tracked
+    // relationship to anyone in it) — anything the eye sees floating with no
+    // line gets flagged.
+    const isUnconnected = (d: GraphNode) => (degree.get(d.id) ?? 0) === 0;
 
     const nodeById = new Map(graph.nodes.map((n) => [n.id, n]));
 
@@ -415,13 +418,13 @@ export function NetworkGraph({
       .selectAll<SVGCircleElement, SimNode>("circle")
       .data(nodes)
       .join("circle")
-      // Unconnected grantees are drawn as a diamond marker overlaid below, so
+      // Unconnected nodes are drawn as a diamond marker overlaid below, so
       // here their circle is kept invisible but still full-size to serve as the
       // click/hover/drag hit target (slightly enlarged to cover the diamond's
       // corners). Everyone else is a normal solid dot.
-      .attr("r", (d) => (isUnconnectedGrantee(d) ? radius(d.id) * 1.3 : radius(d.id)))
-      .attr("fill", (d) => (isUnconnectedGrantee(d) ? "transparent" : fillColor(d)))
-      .attr("stroke", (d) => (isUnconnectedGrantee(d) ? "none" : "var(--foreground)"))
+      .attr("r", (d) => (isUnconnected(d) ? radius(d.id) * 1.3 : radius(d.id)))
+      .attr("fill", (d) => (isUnconnected(d) ? "transparent" : fillColor(d)))
+      .attr("stroke", (d) => (isUnconnected(d) ? "none" : "var(--foreground)"))
       .attr("stroke-width", (d) => (d.isGrantee ? 2.5 : 0.75))
       .attr("stroke-opacity", (d) => (d.isGrantee ? 1 : 0.4))
       .style("cursor", "pointer")
@@ -470,7 +473,7 @@ export function NetworkGraph({
         setHover(null);
       });
 
-    // Unconnected grantees get a diamond marker instead of a circle. Shape is
+    // Unconnected nodes get a diamond marker instead of a circle. Shape is
     // the one visual channel not already in use here (color = service type,
     // ring = grantee vs. partner), so a diamond amid the circles pops out
     // immediately and reads as "flagged / stands apart" without muddying the
@@ -481,7 +484,7 @@ export function NetworkGraph({
       .append("g")
       .attr("pointer-events", "none")
       .selectAll<SVGPathElement, SimNode>("path")
-      .data(nodes.filter(isUnconnectedGrantee))
+      .data(nodes.filter(isUnconnected))
       .join("path")
       .attr("d", (d) => {
         const s = radius(d.id) * 1.3;

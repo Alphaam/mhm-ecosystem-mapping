@@ -45,7 +45,7 @@ export function Legend() {
               strokeLinejoin="round"
             />
           </svg>
-          <span className="text-foreground/80">Unconnected grantee (no relationships in region)</span>
+          <span className="text-foreground/80">Unconnected (no relationships in region)</span>
         </div>
       </div>
     </div>
