@@ -30,24 +30,6 @@ export function Legend() {
           <span className="text-foreground/80">Partner organization</span>
         </div>
       </div>
-
-      <div className="border-t border-border pt-4">
-        <h3 className="mb-1.5 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-          Connectivity
-        </h3>
-        <div className="flex items-center gap-1.5 py-0.5">
-          <svg width="16" height="16" className="shrink-0" aria-hidden="true">
-            <path
-              d="M8,2 L14,8 L8,14 L2,8 Z"
-              fill="var(--foreground)"
-              stroke="var(--foreground)"
-              strokeWidth={1.5}
-              strokeLinejoin="round"
-            />
-          </svg>
-          <span className="text-foreground/80">Unconnected (no relationships in region)</span>
-        </div>
-      </div>
     </div>
   );
 }

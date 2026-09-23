@@ -47,10 +47,17 @@ const LABEL_GAP = 4;
 
 export type SizeMode = "connections" | "grant" | "served";
 
-const SIZE_MODE_OPTIONS: { value: SizeMode; label: string }[] = [
+export const SIZE_MODE_OPTIONS: { value: SizeMode; label: string }[] = [
   { value: "connections", label: "Connections" },
   { value: "grant", label: "Grant size" },
   { value: "served", label: "People served" },
+];
+
+export type ConnectivityFilter = "all" | "connected";
+
+const CONNECTIVITY_OPTIONS: { value: ConnectivityFilter; label: string }[] = [
+  { value: "all", label: "All in region" },
+  { value: "connected", label: "Connected only" },
 ];
 
 // Used for "grant"/"served" sizing when a node has no grant amount or no KPI
@@ -128,6 +135,9 @@ export function NetworkGraph({
   focusNodeId,
   onSelectionChange,
   colorMode = "category",
+  sizeMode = "connections",
+  connectivity,
+  onConnectivityChange,
 }: {
   graph: Graph;
   /** Set (to an org name present in `graph`) to programmatically zoom to and
@@ -143,11 +153,18 @@ export function NetworkGraph({
    *  Status toggle is active, so the graph's colors match what the legend
    *  is showing. */
   colorMode?: "category" | "granteeStatus";
+  /** Circle-size basis, driven by the sidebar's "Size circles by" control. */
+  sizeMode?: SizeMode;
+  /** Connectivity filter, shown as an on-graph toggle where the size control
+   *  used to sit. "all" shows every org in the region; "connected" hides orgs
+   *  with no relationship here. The parent owns it (it also filters the graph
+   *  data) and passes it down so the toggle renders over the map. */
+  connectivity: ConnectivityFilter;
+  onConnectivityChange: (value: ConnectivityFilter) => void;
 }) {
   const svgRef = useRef<SVGSVGElement | null>(null);
   const [hover, setHover] = useState<HoverState | null>(null);
   const [selectedNode, setSelectedNode] = useState<GraphNode | null>(null);
-  const [sizeMode, setSizeMode] = useState<SizeMode>("connections");
   const focusNodeRef = useRef<(id: string) => void>(() => {});
   // Mirrors `selectedNode`'s id so the effect below can restore the
   // selection (bolded connections, revealed labels) after a rebuild
@@ -164,16 +181,6 @@ export function NetworkGraph({
       degree.set(link.source, (degree.get(link.source) ?? 0) + 1);
       degree.set(link.target, (degree.get(link.target) ?? 0) + 1);
     }
-
-    // A node with no relationship edge drawn in this region — it isn't linked
-    // to any other grantee or organization here. Color only encodes service
-    // type, so without a marker these isolated nodes look identical to
-    // well-connected ones. They get the diamond marker below to make their
-    // isolation obvious at a glance. This applies to grantees AND partner orgs
-    // alike (e.g. a Key Regional Player noted for the region but with no tracked
-    // relationship to anyone in it) — anything the eye sees floating with no
-    // line gets flagged.
-    const isUnconnected = (d: GraphNode) => (degree.get(d.id) ?? 0) === 0;
 
     const nodeById = new Map(graph.nodes.map((n) => [n.id, n]));
 
@@ -418,17 +425,12 @@ export function NetworkGraph({
       .selectAll<SVGCircleElement, SimNode>("circle")
       .data(nodes)
       .join("circle")
-      // Unconnected nodes are drawn as a diamond marker overlaid below, so
-      // here their circle is kept invisible but still full-size to serve as the
-      // click/hover/drag hit target (slightly enlarged to cover the diamond's
-      // corners). Everyone else is a normal solid dot.
-      .attr("r", (d) => (isUnconnected(d) ? radius(d.id) * 1.3 : radius(d.id)))
-      .attr("fill", (d) => (isUnconnected(d) ? "transparent" : fillColor(d)))
-      .attr("stroke", (d) => (isUnconnected(d) ? "none" : "var(--foreground)"))
+      .attr("r", (d) => radius(d.id))
+      .attr("fill", fillColor)
+      .attr("stroke", "var(--foreground)")
       .attr("stroke-width", (d) => (d.isGrantee ? 2.5 : 0.75))
       .attr("stroke-opacity", (d) => (d.isGrantee ? 1 : 0.4))
       .style("cursor", "pointer")
-      .style("pointer-events", "all")
       .call(
         d3
           .drag<SVGCircleElement, SimNode>()
@@ -472,28 +474,6 @@ export function NetworkGraph({
       .on("mouseleave", function () {
         setHover(null);
       });
-
-    // Unconnected nodes get a diamond marker instead of a circle. Shape is
-    // the one visual channel not already in use here (color = service type,
-    // ring = grantee vs. partner), so a diamond amid the circles pops out
-    // immediately and reads as "flagged / stands apart" without muddying the
-    // other encodings. It keeps the service-type fill so its category is still
-    // legible. The marker is drawn above the (now-invisible) hit-target circle
-    // and is repositioned every tick.
-    const unconnectedMarker = root
-      .append("g")
-      .attr("pointer-events", "none")
-      .selectAll<SVGPathElement, SimNode>("path")
-      .data(nodes.filter(isUnconnected))
-      .join("path")
-      .attr("d", (d) => {
-        const s = radius(d.id) * 1.3;
-        return `M0,${-s}L${s},0L0,${s}L${-s},0Z`;
-      })
-      .attr("fill", (d) => fillColor(d))
-      .attr("stroke", "var(--foreground)")
-      .attr("stroke-width", 1.75)
-      .attr("stroke-linejoin", "round");
 
     // Clicking empty canvas (not a node) clears the selection/highlight and
     // closes the organization panel; Escape does the same from anywhere.
@@ -643,7 +623,6 @@ export function NetworkGraph({
       });
 
       node.attr("cx", (d) => d.x).attr("cy", (d) => d.y);
-      unconnectedMarker.attr("transform", (d) => `translate(${d.x},${d.y})`);
       labelGroup.attr("transform", (d) => `translate(${d.x},${d.y})`);
     });
 
@@ -673,7 +652,7 @@ export function NetworkGraph({
   return (
     <div className="relative h-full w-full overflow-hidden rounded-xl bg-card">
       <svg ref={svgRef} viewBox={`0 0 ${WIDTH} ${HEIGHT}`} className="h-full w-full" />
-      <SizeModeToggle value={sizeMode} onChange={setSizeMode} />
+      <ConnectivityToggle value={connectivity} onChange={onConnectivityChange} />
       {hover && <NameTooltip x={hover.x} y={hover.y} name={hover.name} />}
       {selectedNode && (
         <OrganizationPanel
@@ -686,16 +665,25 @@ export function NetworkGraph({
   );
 }
 
-function SizeModeToggle({ value, onChange }: { value: SizeMode; onChange: (v: SizeMode) => void }) {
+function ConnectivityToggle({
+  value,
+  onChange,
+}: {
+  value: ConnectivityFilter;
+  onChange: (v: ConnectivityFilter) => void;
+}) {
   return (
-    <div data-tour="size-mode" className="absolute top-3 left-3 z-10 flex items-center gap-0.5 rounded-lg bg-popover p-0.5 text-xs shadow-md ring-1 ring-foreground/10">
-      {SIZE_MODE_OPTIONS.map((o) => (
+    <div
+      data-tour="connectivity"
+      className="absolute top-3 left-3 z-10 flex items-center gap-0.5 rounded-lg bg-popover p-0.5 text-xs shadow-md ring-1 ring-foreground/10"
+    >
+      {CONNECTIVITY_OPTIONS.map((o) => (
         <button
           key={o.value}
           type="button"
           onClick={() => onChange(o.value)}
           aria-pressed={value === o.value}
-          className={`rounded-md px-2 py-1 font-medium transition-colors ${
+          className={`rounded-md px-2.5 py-1 font-medium transition-colors ${
             value === o.value
               ? "bg-primary text-primary-foreground"
               : "text-muted-foreground hover:bg-accent hover:text-foreground"
