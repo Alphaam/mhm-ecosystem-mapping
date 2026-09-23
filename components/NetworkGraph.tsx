@@ -165,6 +165,13 @@ export function NetworkGraph({
       degree.set(link.target, (degree.get(link.target) ?? 0) + 1);
     }
 
+    // A grantee with no relationship edges in this region — funded, but not
+    // linked to any other grantee or organization here. These otherwise look
+    // identical to well-connected grantees (color only encodes service type),
+    // so they get a distinct dashed, translucent ring below to make their
+    // isolation visible at a glance.
+    const isUnconnectedGrantee = (d: GraphNode) => d.isGrantee && (degree.get(d.id) ?? 0) === 0;
+
     const nodeById = new Map(graph.nodes.map((n) => [n.id, n]));
 
     // A plain sqrt scale (area-true) reads as too subtle here — the whole
@@ -410,9 +417,16 @@ export function NetworkGraph({
       .join("circle")
       .attr("r", (d) => radius(d.id))
       .attr("fill", fillColor)
+      // Unconnected grantees read as "open/detached": a translucent fill so
+      // the service-type color still shows through, but the node no longer
+      // looks solid like its linked peers.
+      .attr("fill-opacity", (d) => (isUnconnectedGrantee(d) ? 0.45 : 1))
       .attr("stroke", "var(--foreground)")
       .attr("stroke-width", (d) => (d.isGrantee ? 2.5 : 0.75))
       .attr("stroke-opacity", (d) => (d.isGrantee ? 1 : 0.4))
+      // Dashed ring marks an unconnected grantee; connected grantees keep the
+      // solid ring, partner orgs keep their thin solid ring.
+      .attr("stroke-dasharray", (d) => (isUnconnectedGrantee(d) ? "3,3" : null))
       .style("cursor", "pointer")
       .call(
         d3
