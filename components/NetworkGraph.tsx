@@ -385,7 +385,41 @@ export function NetworkGraph({
       });
       const shown = pickNonOverlapping(priority);
       labelGroup.style("opacity", (d) => (shown.has(d.id) ? 1 : 0));
+      additionalPartnerLabel.style(
+        "opacity",
+        connectivity === "all" && !selectedNodeId ? 1 : 0,
+      );
     }
+
+    // Greedily accepts labels
+    // contextual labels stay separate from the normal name-label collision system
+    // so the broader view can explain its records without crowding every node.
+    const additionalPartnerLabel = root
+      .append("g")
+      .attr("pointer-events", "none")
+      .style("opacity", 0);
+    additionalPartnerLabel
+      .append("text")
+      .attr("text-anchor", "middle")
+      .attr("font-family", "var(--font-sans)")
+      .attr("font-size", 13)
+      .attr("font-weight", 700)
+      .attr("fill", "var(--foreground)")
+      .attr("stroke", "var(--background)")
+      .attr("stroke-width", 5)
+      .style("paint-order", "stroke fill")
+      .text("Additional ecosystem partners");
+    additionalPartnerLabel
+      .append("text")
+      .attr("text-anchor", "middle")
+      .attr("font-family", "var(--font-sans)")
+      .attr("font-size", 10)
+      .attr("fill", "var(--muted-foreground)")
+      .attr("stroke", "var(--background)")
+      .attr("stroke-width", 4)
+      .style("paint-order", "stroke fill")
+      .attr("y", 17)
+      .text("Relationships may not be documented here");
 
     // Greedily accepts labels in priority order, skipping any whose box (in
     // current, post-settle node coordinates) overlaps one already accepted
