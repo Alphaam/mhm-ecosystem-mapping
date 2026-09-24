@@ -55,10 +55,25 @@ export const SIZE_MODE_OPTIONS: { value: SizeMode; label: string }[] = [
 
 export type ConnectivityFilter = "all" | "connected";
 
-const CONNECTIVITY_OPTIONS: { value: ConnectivityFilter; label: string }[] = [
-  { value: "all", label: "All in region" },
-  { value: "connected", label: "Connected only" },
+const CONNECTIVITY_OPTIONS: {
+  value: ConnectivityFilter;
+  label: string;
+  description: string;
+}[] = [
+  {
+    value: "connected",
+    label: "Connected network",
+    description: "Organizations with documented relationships in this region",
+  },
+  {
+    value: "all",
+    label: "Additional ecosystem partners",
+    description: "A broader view that includes organizations whose relationships may not be documented here",
+  },
 ];
+
+const CONNECTIVITY_DESCRIPTIONS: Record<ConnectivityFilter, string> =
+  Object.fromEntries(CONNECTIVITY_OPTIONS.map((option) => [option.value, option.description])) as Record<ConnectivityFilter, string>;
 
 // Used for "grant"/"served" sizing when a node has no grant amount or no KPI
 // data to size by — a fixed, medium circle rather than shrinking to nothing.
@@ -675,23 +690,36 @@ function ConnectivityToggle({
   return (
     <div
       data-tour="connectivity"
-      className="absolute top-3 left-3 z-10 flex items-center gap-0.5 rounded-lg bg-popover p-0.5 text-xs shadow-md ring-1 ring-foreground/10"
+      className="absolute left-3 top-3 z-10 w-[min(31rem,calc(100%-1.5rem))] rounded-lg bg-popover p-1 shadow-md ring-1 ring-foreground/10"
     >
-      {CONNECTIVITY_OPTIONS.map((o) => (
-        <button
-          key={o.value}
-          type="button"
-          onClick={() => onChange(o.value)}
-          aria-pressed={value === o.value}
-          className={`rounded-md px-2.5 py-1 font-medium transition-colors ${
-            value === o.value
-              ? "bg-primary text-primary-foreground"
-              : "text-muted-foreground hover:bg-accent hover:text-foreground"
-          }`}
-        >
-          {o.label}
-        </button>
-      ))}
+      <div role="tablist" aria-label="Ecosystem view" className="flex gap-1">
+        {CONNECTIVITY_OPTIONS.map((option) => (
+          <button
+            key={option.value}
+            id={`ecosystem-tab-${option.value}`}
+            type="button"
+            role="tab"
+            aria-selected={value === option.value}
+            aria-controls="ecosystem-view-description"
+            onClick={() => onChange(option.value)}
+            className={`min-w-0 flex-1 rounded-md px-2.5 py-1.5 text-left text-xs font-medium leading-tight transition-colors ${
+              value === option.value
+                ? "bg-primary text-primary-foreground shadow-sm"
+                : "text-muted-foreground hover:bg-accent hover:text-foreground"
+            }`}
+          >
+            {option.label}
+          </button>
+        ))}
+      </div>
+      <p
+        id="ecosystem-view-description"
+        role="tabpanel"
+        aria-live="polite"
+        className="px-2 py-1 text-[11px] leading-4 text-muted-foreground"
+      >
+        {CONNECTIVITY_DESCRIPTIONS[value]}
+      </p>
     </div>
   );
 }

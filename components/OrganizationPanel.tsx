@@ -49,8 +49,8 @@ export function OrganizationPanel({
         <div className="mt-2 border-t border-border pt-2">
           <div className="rounded bg-muted/60 px-2 py-1.5 text-muted-foreground">
             {node.isGrantee
-              ? "Unconnected grantee: no relationships to other organizations in this region."
-              : "No relationships to other organizations in this region."}
+              ? "Additional ecosystem partner: this grantee did not report a specific partnership in this region. MHM welcomes updates that help identify more connections."
+              : "Additional ecosystem partner: relationships for this organization may not be documented in this region. MHM welcomes updates that help complete the picture."}
           </div>
         </div>
       )}
