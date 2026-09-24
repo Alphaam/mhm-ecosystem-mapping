@@ -690,9 +690,9 @@ function ConnectivityToggle({
   return (
     <div
       data-tour="connectivity"
-      className="absolute left-3 top-3 z-10 w-[min(31rem,calc(100%-1.5rem))] rounded-lg bg-popover p-1 shadow-md ring-1 ring-foreground/10"
+      className="absolute left-3 top-3 z-10 w-[min(36rem,calc(100%-1.5rem))]"
     >
-      <div role="tablist" aria-label="Ecosystem view" className="flex gap-1">
+      <div className="flex items-end border-b border-border/80" role="tablist" aria-label="Ecosystem view">
         {CONNECTIVITY_OPTIONS.map((option) => (
           <button
             key={option.value}
@@ -702,10 +702,10 @@ function ConnectivityToggle({
             aria-selected={value === option.value}
             aria-controls="ecosystem-view-description"
             onClick={() => onChange(option.value)}
-            className={`min-w-0 flex-1 rounded-md px-2.5 py-1.5 text-left text-xs font-medium leading-tight transition-colors ${
+            className={`relative -mb-px max-w-[18rem] truncate border border-b-0 px-4 py-2 text-left text-xs font-semibold transition-colors ${
               value === option.value
-                ? "bg-primary text-primary-foreground shadow-sm"
-                : "text-muted-foreground hover:bg-accent hover:text-foreground"
+                ? "rounded-t-lg border-border/80 bg-card text-foreground shadow-[0_-1px_3px_rgba(0,0,0,0.04)]"
+                : "rounded-t-lg border-transparent bg-secondary/70 text-muted-foreground hover:bg-secondary hover:text-foreground"
             }`}
           >
             {option.label}
@@ -716,7 +716,7 @@ function ConnectivityToggle({
         id="ecosystem-view-description"
         role="tabpanel"
         aria-live="polite"
-        className="px-2 py-1 text-[11px] leading-4 text-muted-foreground"
+        className="max-w-[34rem] rounded-b-md rounded-tr-md bg-card/95 px-3 py-1.5 text-[11px] leading-4 text-muted-foreground shadow-sm"
       >
         {CONNECTIVITY_DESCRIPTIONS[value]}
       </p>
