@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex">
+  <title>MHM | Minimal separation studies</title>
+  <style>
+    :root { --background: #ffffff; --foreground: #202037; --muted: #656579; --border: #dedee5; }
+    * { box-sizing: border-box; }
+    html { background: var(--background); color: var(--foreground); scroll-behavior: smooth; }
+    body { margin: 0; font: 16px/1.5 system-ui, sans-serif; }
+    main { max-width: 1488px; margin: auto; padding: 32px 24px 64px; }
+    header { max-width: 780px; }
+    h1 { font-size: 28px; line-height: 1.3; font-weight: 600; margin: 12px 0; }
+    h2 { font-size: 20px; font-weight: 600; margin: 0 0 8px; }
+    p { margin: 0 0 20px; color: var(--muted); }
+    a { color: inherit; text-underline-offset: 4px; }
+    a:focus-visible { outline: 2px solid var(--foreground); outline-offset: 4px; }
+    nav { display: flex; gap: 24px; flex-wrap: wrap; }
+    section { padding-top: 48px; scroll-margin-top: 16px; }
+    figure { margin: 0; }
+    img { display: block; width: 100%; height: auto; border: 1px solid var(--border); border-radius: 8px; }
+    figcaption { color: var(--muted); font-size: 14px; padding-top: 12px; }
+    .eyebrow { font-size: 14px; color: var(--muted); }
+    @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+  </style>
+</head>
+<body>
+  <main>
+    <header>
+      <span class="eyebrow">MHM / Layout studies only</span>
+      <h1>Same network. A separate field.</h1>
+      <p>Three screenshot mockups made from the current Region A interface. Existing circles, colors, sizes and relationship lines are preserved. Only their placement and field headings change. The live ecosystem visualization is untouched.</p>
+      <nav aria-label="Layout studies">
+        <a href="#open">Open field</a>
+        <a href="#side">Side field</a>
+        <a href="#bottom">Bottom field</a>
+      </nav>
+    </header>
+    <section id="open" aria-labelledby="open-title">
+      <h2 id="open-title">Open field</h2>
+      <p>Closest to your references: whitespace separates two groups. One quiet heading labels each field, with no boxes or per-node status labels.</p>
+      <figure>
+        <a href="/concepts/segmentation-open-field.png" target="_blank" rel="noopener" aria-label="Open full-size open-field rendering in a new tab"><img src="/concepts/segmentation-open-field.png" width="1440" height="900" alt="Existing Region A network on the left, additional ecosystem partners loosely arranged on the right, separated only by whitespace and field headings."></a>
+        <figcaption>Recommended for the lightest touch. Click the picture to open it at full size. This is a static mockup, not an interactive map.</figcaption>
+      </figure>
+    </section>
+    <section id="side" aria-labelledby="side-title">
+      <h2 id="side-title">Side field</h2>
+      <p>A single vertical divider makes the distinction immediate. Additional partners use the same dots, arranged in a calm grid.</p>
+      <figure>
+        <a href="/concepts/segmentation-side-field.png" target="_blank" rel="noopener" aria-label="Open full-size side-field rendering in a new tab"><img src="/concepts/segmentation-side-field.png" width="1440" height="900" loading="lazy" alt="Unchanged Region A network and a grid of additional partner dots, separated by a thin vertical line with one heading for each field."></a>
+        <figcaption>Strongest separation for a quick board-level scan. No new node symbols, colors or borders.</figcaption>
+      </figure>
+    </section>
+    <section id="bottom" aria-labelledby="bottom-title">
+      <h2 id="bottom-title">Bottom field</h2>
+      <p>The network keeps the full canvas width. Additional partners sit in a compact strip underneath, with one shared heading.</p>
+      <figure>
+        <a href="/concepts/segmentation-bottom-field.png" target="_blank" rel="noopener" aria-label="Open full-size bottom-field rendering in a new tab"><img src="/concepts/segmentation-bottom-field.png" width="1440" height="900" loading="lazy" alt="Existing network above a thin horizontal divider; nine additional ecosystem partner dots appear in a single row beneath it."></a>
+        <figcaption>Best when the documented network needs more horizontal space. All three studies use the same 15 regional organizations.</figcaption>
+      </figure>
+    </section>
+  </main>
+</body>
+</html>
