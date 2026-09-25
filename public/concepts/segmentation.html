@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex">
+  <title>MHM | Minimal separation studies</title>
+  <style>
+    :root { --background: #ffffff; --foreground: #202037; --muted: #656579; --border: #dedee5; }
+    * { box-sizing: border-box; }
+    html { background: var(--background); color: var(--foreground); scroll-behavior: smooth; }
+    body { margin: 0; font: 16px/1.5 system-ui, sans-serif; }
+    main { max-width: 1488px; margin: auto; padding: 32px 24px 64px; }
+    header { max-width: 780px; }
+    h1 { font-size: 28px; line-height: 1.3; font-weight: 600; margin: 12px 0; }
+    h2 { font-size: 20px; font-weight: 600; margin: 0 0 8px; }
+    p { margin: 0 0 20px; color: var(--muted); }
+    a { color: inherit; text-underline-offset: 4px; }
+    a:focus-visible { outline: 2px solid var(--foreground); outline-offset: 4px; }
+    nav { display: flex; gap: 24px; flex-wrap: wrap; }
+    section { padding-top: 48px; scroll-margin-top: 16px; }
+    figure { margin: 0; }
+    img { display: block; width: 100%; height: auto; border: 1px solid var(--border); border-radius: 8px; }
+    figcaption { color: var(--muted); font-size: 14px; padding-top: 12px; }
+    .eyebrow { font-size: 14px; color: var(--muted); }
+    @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+  </style>
+</head>
+<body>
+  <main>
+    <header>
+      <span class="eyebrow">MHM / Segmentation concepts</span>
+      <h1>Four ways to define the fields.</h1>
+      <p>Generated visual concepts, not screenshots of implemented changes or verified data. Compare the field treatments only: the surrounding interface, node counts and colors are illustrative. Implementation would retain the current tool, node styling and recorded relationships. The live visualization is unchanged.</p>
+      <nav aria-label="Segmentation concepts">
+        <a href="#enclosures">Cluster enclosures</a>
+        <a href="#tints">Tinted fields</a>
+        <a href="#directory">Partner directory</a>
+        <a href="#band">Ecosystem band</a>
+      </nav>
+    </header>
+    <section id="enclosures" aria-labelledby="enclosures-title">
+      <h2 id="enclosures-title">Cluster enclosures</h2>
+      <p>Like your fourth reference: pale neutral boundaries collect each set into its own visible neighborhood. One heading belongs to each whole field.</p>
+      <figure>
+        <a href="/concepts/study-enclosures.png" target="_blank" rel="noopener" aria-label="Open full-size cluster enclosure concept"><img src="/concepts/study-enclosures.png" width="1024" height="1024" alt="Two pale circular enclosures surround the documented network and additional ecosystem partners, with labels above the fields."></a>
+        <figcaption>Grouping is expressed by enclosure, not by changing individual dots. Field area would not encode a metric. Click any image to enlarge.</figcaption>
+      </figure>
+    </section>
+    <section id="tints" aria-labelledby="tints-title">
+      <h2 id="tints-title">Tinted fields</h2>
+      <p>A soft blue wash and a sage wash establish two distinct territories. Labels make the distinction readable without relying on color alone.</p>
+      <figure>
+        <a href="/concepts/study-tinted-fields.png" target="_blank" rel="noopener" aria-label="Open full-size tinted field concept"><img src="/concepts/study-tinted-fields.png" width="1024" height="1024" loading="lazy" alt="A pale blue field contains the relationship network, while a pale sage field contains additional partner dots, each with one field heading."></a>
+        <figcaption>Fastest visual separation. Background hue describes the field only; existing dot colors would still describe service type.</figcaption>
+      </figure>
+    </section>
+    <section id="directory" aria-labelledby="directory-title">
+      <h2 id="directory-title">Partner directory</h2>
+      <p>A different interaction model: keep the relationship map intact and present additional partners in a compact, independently browsable inset directory.</p>
+      <figure>
+        <a href="/concepts/study-partner-directory.png" target="_blank" rel="noopener" aria-label="Open full-size partner directory concept"><img src="/concepts/study-partner-directory.png" width="1024" height="1024" loading="lazy" alt="The relationship network remains on an open canvas beside a separate inset directory of partner dots with one shared heading."></a>
+        <figcaption>Partners are a directory, not loose nodes that appear to be missing links. In implementation, dots could open the same existing organization profiles.</figcaption>
+      </figure>
+    </section>
+    <section id="band" aria-labelledby="band-title">
+      <h2 id="band-title">Ecosystem band</h2>
+      <p>Nested rather than divided: the documented network sits within a larger ecosystem, with additional partners occupying a labeled outer band.</p>
+      <figure>
+        <a href="/concepts/study-ecosystem-band.png" target="_blank" rel="noopener" aria-label="Open full-size ecosystem band concept"><img src="/concepts/study-ecosystem-band.png" width="1024" height="1024" loading="lazy" alt="Documented relationships occupy a central field, surrounded by a neutral outer band containing additional ecosystem partners and one shared heading."></a>
+        <figcaption>Strongest sense of belonging to one ecosystem. Caution: center and edge can suggest importance; the band must not imply rank, measured distance or undocumented relationships.</figcaption>
+      </figure>
+    </section>
+  </main>
+</body>
+</html>

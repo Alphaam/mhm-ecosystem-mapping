@@ -45,6 +45,15 @@ export function OrganizationPanel({
         <Row label="Primary Service Area" value={node.serviceArea} />
       </dl>
       {node.kpi && <KpiSection kpi={node.kpi} />}
+      {node.connections.length === 0 && (
+        <div className="mt-2 border-t border-border pt-2">
+          <div className="rounded bg-muted/60 px-2 py-1.5 text-muted-foreground">
+            {node.isGrantee
+              ? "Additional ecosystem partner: this grantee did not report a specific partnership in this region. MHM welcomes updates that help identify more connections."
+              : "Additional ecosystem partner: relationships for this organization may not be documented in this region. MHM welcomes updates that help complete the picture."}
+          </div>
+        </div>
+      )}
       {node.connections.length > 0 && (
         <div className="mt-2 border-t border-border pt-2">
           <div className="mb-1 font-medium text-foreground">Connections in this region</div>
