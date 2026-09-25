@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex">
+  <title>MHM | Canvas segmentation studies</title>
+  <style>
+    :root { --background: #fff; --foreground: #202038; --muted: #606074; --border: #dedee5; --primary: #4146db; }
+    * { box-sizing: border-box; }
+    html { background: var(--background); color: var(--foreground); font-family: system-ui, sans-serif; }
+    body { margin: 0; }
+    main { max-width: 1488px; margin: auto; padding: 32px 24px 64px; }
+    header { max-width: 780px; margin-bottom: 32px; }
+    h1 { font-size: clamp(24px, 4vw, 36px); line-height: 1.2; font-weight: 600; text-wrap: balance; }
+    h2 { font-size: 20px; font-weight: 600; margin: 0; }
+    p { font-size: 16px; line-height: 1.6; color: var(--muted); }
+    nav { display: flex; flex-wrap: wrap; gap: 24px; }
+    a { color: var(--primary); text-underline-offset: 4px; }
+    a:focus-visible { outline: 2px solid var(--primary); outline-offset: 5px; }
+    section { margin-top: 48px; scroll-margin-top: 24px; }
+    .heading { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 16px; }
+    .heading a { font-size: 14px; }
+    figure { margin: 20px 0 0; }
+    figure a { display: block; border: 1px solid var(--border); border-radius: 8px; overflow: hidden; }
+    img { display: block; width: 100%; height: auto; }
+    figcaption { margin-top: 12px; color: var(--muted); font-size: 14px; line-height: 1.6; }
+  </style>
+</head>
+<body>
+  <main>
+    <header>
+      <a href="/regions/A">Back to the unchanged ecosystem</a>
+      <h1>Same network. Three ways to separate the fields.</h1>
+      <p>Screenshot studies using the actual Region A interface. The circles, colors, sizes, outlines, curved links, tabs, and sidebar are unchanged. Only placement and field backgrounds differ. Each field is labeled once.</p>
+      <nav aria-label="Compare segmentation studies">
+        <a href="#fields">Side-by-side fields</a>
+        <a href="#islands">Soft enclosing fields</a>
+        <a href="#band">Lower partner band</a>
+      </nav>
+    </header>
+    <section id="fields" aria-labelledby="fields-title">
+      <div class="heading"><h2 id="fields-title">Side-by-side fields</h2><a href="/segmentation/fields.png" target="_blank" rel="noopener">Open full-size image</a></div>
+      <p>Two quiet tinted areas. The clearest side-by-side comparison.</p>
+      <figure>
+        <a href="/segmentation/fields.png" target="_blank" rel="noopener" aria-label="Open side-by-side fields rendering at full size"><img src="/segmentation/fields.png" width="1440" height="900" alt="The unchanged MHM interface with the documented network in a pale left field and additional ecosystem partners in a pale right field."></a>
+        <figcaption>The two headings describe the records, not the organizations' actual level of connectedness.</figcaption>
+      </figure>
+    </section>
+    <section id="islands" aria-labelledby="islands-title">
+      <div class="heading"><h2 id="islands-title">Soft enclosing fields</h2><a href="/segmentation/islands.png" target="_blank" rel="noopener">Open full-size image</a></div>
+      <p>Subtle oval fields, closest to the grouped areas in your inspiration screenshots.</p>
+      <figure>
+        <a href="/segmentation/islands.png" target="_blank" rel="noopener" aria-label="Open soft enclosing fields rendering at full size"><img src="/segmentation/islands.png" width="1440" height="900" loading="lazy" alt="The same network circles and curves enclosed in two faint oval fields, each with a single field heading."></a>
+        <figcaption>No new connections or per-node status labels. The background alone defines each group.</figcaption>
+      </figure>
+    </section>
+    <section id="band" aria-labelledby="band-title">
+      <div class="heading"><h2 id="band-title">Lower partner band</h2><a href="/segmentation/band.png" target="_blank" rel="noopener">Open full-size image</a></div>
+      <p>The smallest visual intervention. Keep the network on open canvas and collect additional partners in one subtle band below.</p>
+      <figure>
+        <a href="/segmentation/band.png" target="_blank" rel="noopener" aria-label="Open lower partner band rendering at full size"><img src="/segmentation/band.png" width="1440" height="900" loading="lazy" alt="The unchanged documented network on white space above a lightly shaded band of additional ecosystem partner circles."></a>
+        <figcaption>My recommendation for minimal change: a single field labeled “Additional ecosystem partners.”</figcaption>
+      </figure>
+    </section>
+  </main>
+</body>
+</html>
