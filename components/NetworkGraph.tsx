@@ -55,7 +55,7 @@ export const SIZE_MODE_OPTIONS: { value: SizeMode; label: string }[] = [
 
 export type ConnectivityFilter = "all" | "connected";
 
-const CONNECTIVITY_OPTIONS: { value: ConnectivityFilter; label: string; description: string }[] = [
+export const CONNECTIVITY_OPTIONS: { value: ConnectivityFilter; label: string; description: string }[] = [
   {
     value: "connected",
     label: "Connected network",
@@ -166,7 +166,6 @@ export function NetworkGraph({
   colorMode = "category",
   sizeMode = "connections",
   connectivity,
-  onConnectivityChange,
 }: {
   graph: Graph;
   /** Set (to an org name present in `graph`) to programmatically zoom to and
@@ -184,12 +183,10 @@ export function NetworkGraph({
   colorMode?: "category" | "granteeStatus";
   /** Circle-size basis, driven by the sidebar's "Size circles by" control. */
   sizeMode?: SizeMode;
-  /** Connectivity filter, shown as an on-graph toggle where the size control
-   *  used to sit. "all" shows every org in the region; "connected" hides orgs
-   *  with no relationship here. The parent owns it (it also filters the graph
-   *  data) and passes it down so the toggle renders over the map. */
+  /** Connectivity view chosen in the page header's tabs. "all" shows every
+   *  org in the region with grouped fields; "connected" hides orgs with no
+   *  relationship here. */
   connectivity: ConnectivityFilter;
-  onConnectivityChange: (value: ConnectivityFilter) => void;
 }) {
   const svgRef = useRef<SVGSVGElement | null>(null);
   const fieldId = useId().replace(/[^a-zA-Z0-9_-]/g, "");
@@ -277,7 +274,7 @@ export function NetworkGraph({
     const anchorY = showFields ? HEIGHT / 2 + 30 : HEIGHT / 2;
 
     // Field titles sit above each group, so leave room for them at the top.
-    const topInset = showFields ? 44 : 8;
+    const topInset = showFields ? 64 : 8;
     function clampToCanvas(x: number, y: number, r: number) {
       return {
         x: Math.max(r + 8, Math.min(WIDTH - r - 8, x)),
@@ -411,7 +408,9 @@ export function NetworkGraph({
           maxX = Math.max(maxX, n.x + r);
           minY = Math.min(minY, n.y - r);
         }
-        f.title.attr("x", (minX + maxX) / 2).attr("y", minY - FIELD_TITLE_GAP + 18);
+        const halfTitle = (f.title.node()?.getComputedTextLength() ?? 0) / 2 + 12;
+        const titleX = Math.max(halfTitle, Math.min(WIDTH - halfTitle, (minX + maxX) / 2));
+        f.title.attr("x", titleX).attr("y", Math.max(24, minY - FIELD_TITLE_GAP + 18));
       }
     }
 
@@ -769,61 +768,61 @@ export function NetworkGraph({
   }, [focusNodeId]);
 
   return (
-    <div className="flex h-full w-full flex-col">
-      <ConnectivityTabs value={connectivity} onChange={onConnectivityChange} />
-      <div className="flex min-h-0 flex-1 flex-col overflow-hidden rounded-xl border border-border bg-card">
-        <p className="shrink-0 border-b border-border bg-accent px-4 py-2 text-xs text-muted-foreground text-pretty">
-          {(CONNECTIVITY_OPTIONS.find((o) => o.value === connectivity) ?? CONNECTIVITY_OPTIONS[0]).description}
-        </p>
-        <div className="relative min-h-0 flex-1 overflow-hidden">
-        <svg ref={svgRef} viewBox={`0 0 ${WIDTH} ${HEIGHT}`} className="h-full w-full" />
-        {hover && <NameTooltip x={hover.x} y={hover.y} name={hover.name} />}
-        {selectedNode && (
-          <OrganizationPanel
-            node={selectedNode}
-            onClose={() => setSelectedNode(null)}
-            onSelectConnection={(id) => focusNodeRef.current(id)}
-          />
-        )}
-        </div>
-      </div>
+    <div className="relative h-full w-full overflow-hidden">
+      <svg ref={svgRef} viewBox={`0 0 ${WIDTH} ${HEIGHT}`} className="h-full w-full" />
+      {hover && <NameTooltip x={hover.x} y={hover.y} name={hover.name} />}
+      {selectedNode && (
+        <OrganizationPanel
+          node={selectedNode}
+          onClose={() => setSelectedNode(null)}
+          onSelectConnection={(id) => focusNodeRef.current(id)}
+        />
+      )}
     </div>
   );
 }
 
-function ConnectivityTabs({
+/** Folder-style tabs meant to sit on a border line, with the view they
+ *  control directly beneath. The selected tab covers the line so it opens
+ *  into the view window. */
+export function ConnectivityTabs({
   value,
   onChange,
 }: {
   value: ConnectivityFilter;
   onChange: (v: ConnectivityFilter) => void;
 }) {
+  const active = CONNECTIVITY_OPTIONS.find((o) => o.value === value) ?? CONNECTIVITY_OPTIONS[0];
   return (
-    <div
-      role="tablist"
-      aria-label="Network view"
-      data-tour="connectivity"
-      className="relative z-10 -mb-px flex shrink-0 items-end gap-1 px-3"
-    >
-      {CONNECTIVITY_OPTIONS.map((o) => {
-        const selected = value === o.value;
-        return (
-          <button
-            key={o.value}
-            type="button"
-            role="tab"
-            aria-selected={selected}
-            onClick={() => onChange(o.value)}
-            className={`rounded-t-lg border border-b-0 px-3 text-xs font-medium transition-colors sm:px-4 sm:text-sm ${
-              selected
-                ? "border-border bg-accent py-2 text-primary"
-                : "border-transparent bg-secondary py-1.5 text-muted-foreground hover:text-foreground"
-            }`}
-          >
-            {o.label}
-          </button>
-        );
-      })}
+    <div className="-mb-px flex min-w-0 items-end gap-4">
+      <div
+        role="tablist"
+        aria-label="Network view"
+        data-tour="connectivity"
+        className="flex shrink-0 items-end gap-1"
+      >
+        {CONNECTIVITY_OPTIONS.map((o) => {
+          const selected = value === o.value;
+          return (
+            <button
+              key={o.value}
+              type="button"
+              role="tab"
+              aria-selected={selected}
+              title={o.description}
+              onClick={() => onChange(o.value)}
+              className={`whitespace-nowrap rounded-t-lg border border-b-0 px-3 text-xs font-medium transition-colors sm:px-4 sm:text-sm ${
+                selected
+                  ? "border-border border-t-2 border-t-primary bg-background py-2 text-primary"
+                  : "border-transparent bg-secondary py-1.5 text-muted-foreground hover:text-foreground"
+              }`}
+            >
+              {o.label}
+            </button>
+          );
+        })}
+      </div>
+      <p className="hidden min-w-0 truncate pb-2 text-xs text-muted-foreground lg:block">{active.description}</p>
     </div>
   );
 }

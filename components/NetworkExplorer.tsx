@@ -4,6 +4,7 @@ import { FilterLegend, type LegendMode } from "@/components/FilterLegend";
 import { GuidedTour, type TourStep } from "@/components/GuidedTour";
 import { Legend } from "@/components/Legend";
 import {
+  ConnectivityTabs,
   NetworkGraph,
   SIZE_MODE_OPTIONS,
   type ConnectivityFilter,
@@ -228,7 +229,8 @@ export function NetworkExplorer({
 
   return (
     <div className="flex h-full min-h-0 flex-1 flex-col">
-      <div className="flex shrink-0 items-start justify-between gap-3 border-b border-border px-4 py-3 sm:px-6 sm:py-4">
+      <div className="flex shrink-0 flex-col gap-4 border-b border-border pt-3 sm:gap-5 sm:pt-4">
+      <div className="flex items-start justify-between gap-3 px-4 sm:px-6">
         <div>
           <h1 className="text-xl font-semibold tracking-tight text-foreground sm:text-2xl">
             {activeRegion?.label}
@@ -249,6 +251,13 @@ export function NetworkExplorer({
           </svg>
           How to use
         </button>
+      </div>
+      <div className="flex">
+        <div aria-hidden="true" className="hidden shrink-0 md:block md:w-72 lg:w-80 xl:w-[26rem]" />
+        <div className="min-w-0 flex-1 px-4 sm:px-6">
+          <ConnectivityTabs value={connectivity} onChange={setConnectivity} />
+        </div>
+      </div>
       </div>
 
       <button
@@ -334,7 +343,7 @@ export function NetworkExplorer({
           </div>
         </aside>
 
-        <div className="relative min-h-0 flex-1 px-4 pt-3 pb-4 sm:px-6 sm:pt-4 sm:pb-6" data-tour="graph">
+        <div className="relative min-h-0 flex-1" data-tour="graph">
           <NetworkGraph
             graph={filteredGraph}
             focusNodeId={focusOrgId}
@@ -342,7 +351,6 @@ export function NetworkExplorer({
             colorMode={legendMode}
             sizeMode={sizeMode}
             connectivity={connectivity}
-            onConnectivityChange={setConnectivity}
           />
         </div>
       </div>
