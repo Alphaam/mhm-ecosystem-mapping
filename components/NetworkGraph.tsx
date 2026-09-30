@@ -750,17 +750,19 @@ export function NetworkGraph({
   }, [focusNodeId]);
 
   return (
-    <div className="relative h-full w-full overflow-hidden rounded-xl bg-card">
-      <svg ref={svgRef} viewBox={`0 0 ${WIDTH} ${HEIGHT}`} className="h-full w-full" />
+    <div className="flex h-full w-full flex-col overflow-hidden rounded-xl bg-card">
       <ConnectivityToggle value={connectivity} onChange={onConnectivityChange} />
-      {hover && <NameTooltip x={hover.x} y={hover.y} name={hover.name} />}
-      {selectedNode && (
-        <OrganizationPanel
-          node={selectedNode}
-          onClose={() => setSelectedNode(null)}
-          onSelectConnection={(id) => focusNodeRef.current(id)}
-        />
-      )}
+      <div className="relative min-h-0 flex-1 overflow-hidden">
+        <svg ref={svgRef} viewBox={`0 0 ${WIDTH} ${HEIGHT}`} className="h-full w-full" />
+        {hover && <NameTooltip x={hover.x} y={hover.y} name={hover.name} />}
+        {selectedNode && (
+          <OrganizationPanel
+            node={selectedNode}
+            onClose={() => setSelectedNode(null)}
+            onSelectConnection={(id) => focusNodeRef.current(id)}
+          />
+        )}
+      </div>
     </div>
   );
 }
@@ -774,7 +776,7 @@ function ConnectivityToggle({
 }) {
   const active = CONNECTIVITY_OPTIONS.find((o) => o.value === value) ?? CONNECTIVITY_OPTIONS[0];
   return (
-    <div data-tour="connectivity" className="absolute top-3 left-3 z-10 flex max-w-[calc(100%-1.5rem)] flex-col gap-2">
+    <div data-tour="connectivity" className="relative z-10 flex shrink-0 flex-col gap-2 border-b border-dashed border-border bg-card px-3 pt-3 pb-2.5">
       <div role="tablist" aria-label="Network view" className="flex items-end gap-1 border-b border-border">
         {CONNECTIVITY_OPTIONS.map((o) => {
           const selected = value === o.value;
