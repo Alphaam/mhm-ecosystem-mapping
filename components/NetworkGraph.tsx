@@ -10,7 +10,7 @@ import {
 import { OrganizationPanel } from "@/components/OrganizationPanel";
 import type { Graph, GraphNode } from "@/lib/types";
 import * as d3 from "d3";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useId, useRef, useState } from "react";
 
 interface SimNode extends GraphNode {
   x: number;
@@ -55,10 +55,39 @@ export const SIZE_MODE_OPTIONS: { value: SizeMode; label: string }[] = [
 
 export type ConnectivityFilter = "all" | "connected";
 
-const CONNECTIVITY_OPTIONS: { value: ConnectivityFilter; label: string }[] = [
-  { value: "all", label: "All in region" },
-  { value: "connected", label: "Connected only" },
+const CONNECTIVITY_OPTIONS: { value: ConnectivityFilter; label: string; description: string }[] = [
+  {
+    value: "connected",
+    label: "Connected network",
+    description: "Organizations with a documented relationship in this region",
+  },
+  {
+    value: "all",
+    label: "Additional ecosystem partners",
+    description: "A broader view that includes organizations whose relationships may not be documented here",
+  },
 ];
+
+// Soft, borderless fields drawn behind each group in the "all" view. Each
+// field is the blurred union of oversized circles centered on that group's own
+// nodes, so it reshapes and follows the group as nodes move or are dragged.
+const FIELD_PADDING = 46;
+const FIELD_BLUR = 26;
+const FIELD_TITLE_GAP = 54;
+const FIELD_GROUPS = [
+  {
+    key: "documented",
+    title: "Documented connections",
+    fill: "var(--field-documented)",
+    ink: "var(--field-documented-title)",
+  },
+  {
+    key: "partners",
+    title: "Additional ecosystem partners",
+    fill: "var(--field-partners)",
+    ink: "var(--field-partners-title)",
+  },
+] as const;
 
 // Used for "grant"/"served" sizing when a node has no grant amount or no KPI
 // data to size by — a fixed, medium circle rather than shrinking to nothing.
@@ -163,6 +192,7 @@ export function NetworkGraph({
   onConnectivityChange: (value: ConnectivityFilter) => void;
 }) {
   const svgRef = useRef<SVGSVGElement | null>(null);
+  const fieldId = useId().replace(/[^a-zA-Z0-9_-]/g, "");
   const [hover, setHover] = useState<HoverState | null>(null);
   const [selectedNode, setSelectedNode] = useState<GraphNode | null>(null);
   const focusNodeRef = useRef<(id: string) => void>(() => {});
@@ -234,6 +264,18 @@ export function NetworkGraph({
     // normal starting spread — the graph visibly explodes before it can
     // settle. Spreading the start position out (further for later nodes)
     // gives the simulation a reasonable layout to refine instead of escape.
+    // In the "all" view, connected and unconnected orgs are pulled toward
+    // separate horizontal anchors so each group gets its own field.
+    const showFields = connectivity === "all";
+    const isConnected = (id: string) => (degree.get(id) ?? 0) > 0;
+    const hasBothGroups =
+      showFields && graph.nodes.some((n) => isConnected(n.id)) && graph.nodes.some((n) => !isConnected(n.id));
+    function anchorX(id: string): number {
+      if (!hasBothGroups) return WIDTH / 2;
+      return isConnected(id) ? WIDTH * 0.36 : WIDTH * 0.8;
+    }
+    const anchorY = showFields ? HEIGHT / 2 + 30 : HEIGHT / 2;
+
     const GOLDEN_ANGLE = Math.PI * (3 - Math.sqrt(5));
     const spiralSpacing = 3.4;
     const nodes: SimNode[] = graph.nodes.map((n, i) => {
@@ -241,8 +283,8 @@ export function NetworkGraph({
       const angle = i * GOLDEN_ANGLE;
       return {
         ...n,
-        x: WIDTH / 2 + spiralRadius * Math.cos(angle),
-        y: HEIGHT / 2 + spiralRadius * Math.sin(angle),
+        x: anchorX(n.id) + spiralRadius * Math.cos(angle),
+        y: anchorY + spiralRadius * Math.sin(angle),
       };
     });
 
@@ -288,8 +330,11 @@ export function NetworkGraph({
           .strength(0.55),
       )
       .force("charge", d3.forceManyBody().strength(-280).distanceMax(400))
-      .force("x", d3.forceX(WIDTH / 2).strength(0.04))
-      .force("y", d3.forceY(HEIGHT / 2).strength(0.04))
+      .force(
+        "x",
+        d3.forceX<SimNode>((d) => anchorX(d.id)).strength((d) => (hasBothGroups && !isConnected(d.id) ? 0.12 : 0.04)),
+      )
+      .force("y", d3.forceY<SimNode>(anchorY).strength((d) => (hasBothGroups && !isConnected(d.id) ? 0.08 : 0.04)))
       .force(
         "collide",
         d3.forceCollide<SimNode>((d) => radius(d.id) + 14),
@@ -302,6 +347,60 @@ export function NetworkGraph({
       .velocityDecay(0.72)
       .alphaDecay(0.05)
       .alpha(0.6);
+
+    const fieldFilterId = `field-blur-${fieldId}`;
+    svg
+      .append("defs")
+      .append("filter")
+      .attr("id", fieldFilterId)
+      .attr("x", "-50%")
+      .attr("y", "-50%")
+      .attr("width", "200%")
+      .attr("height", "200%")
+      .append("feGaussianBlur")
+      .attr("stdDeviation", FIELD_BLUR);
+
+    const fieldLayer = root.append("g").attr("pointer-events", "none");
+    const fields = showFields
+      ? FIELD_GROUPS.map((group) => {
+          const members = nodes.filter((n) => (group.key === "documented" ? isConnected(n.id) : !isConnected(n.id)));
+          if (members.length === 0) return null;
+          const g = fieldLayer.append("g");
+          const blobs = g
+            .append("g")
+            .attr("filter", `url(#${fieldFilterId})`)
+            .selectAll<SVGCircleElement, SimNode>("circle")
+            .data(members)
+            .join("circle")
+            .attr("r", (d) => radius(d.id) + FIELD_PADDING)
+            .attr("fill", group.fill);
+          const title = g
+            .append("text")
+            .attr("font-family", "var(--font-sans)")
+            .attr("font-size", 18)
+            .attr("font-weight", 600)
+            .attr("text-anchor", "middle")
+            .attr("fill", group.ink)
+            .text(group.title);
+          return { members, blobs, title };
+        }).filter((f) => f !== null)
+      : [];
+
+    function updateFields() {
+      for (const f of fields) {
+        f.blobs.attr("cx", (d) => d.x).attr("cy", (d) => d.y);
+        let minX = Infinity;
+        let maxX = -Infinity;
+        let minY = Infinity;
+        for (const n of f.members) {
+          const r = radius(n.id);
+          minX = Math.min(minX, n.x - r);
+          maxX = Math.max(maxX, n.x + r);
+          minY = Math.min(minY, n.y - r);
+        }
+        f.title.attr("x", (minX + maxX) / 2).attr("y", minY - FIELD_TITLE_GAP + 18);
+      }
+    }
 
     const link = root
       .append("g")
@@ -624,6 +723,7 @@ export function NetworkGraph({
 
       node.attr("cx", (d) => d.x).attr("cy", (d) => d.y);
       labelGroup.attr("transform", (d) => `translate(${d.x},${d.y})`);
+      updateFields();
     });
 
     simulation.on("end", onSettle);
@@ -640,7 +740,7 @@ export function NetworkGraph({
       svg.on("click", null);
       window.removeEventListener("keydown", onKeyDown);
     };
-  }, [graph, sizeMode, colorMode, onSelectionChange]);
+  }, [graph, sizeMode, colorMode, connectivity, fieldId, onSelectionChange]);
 
   // Runs after the effect above, in the same commit, whenever a caller (e.g.
   // an "Organizations" search control) asks to focus a specific org — by
@@ -672,26 +772,31 @@ function ConnectivityToggle({
   value: ConnectivityFilter;
   onChange: (v: ConnectivityFilter) => void;
 }) {
+  const active = CONNECTIVITY_OPTIONS.find((o) => o.value === value) ?? CONNECTIVITY_OPTIONS[0];
   return (
-    <div
-      data-tour="connectivity"
-      className="absolute top-3 left-3 z-10 flex items-center gap-0.5 rounded-lg bg-popover p-0.5 text-xs shadow-md ring-1 ring-foreground/10"
-    >
-      {CONNECTIVITY_OPTIONS.map((o) => (
-        <button
-          key={o.value}
-          type="button"
-          onClick={() => onChange(o.value)}
-          aria-pressed={value === o.value}
-          className={`rounded-md px-2.5 py-1 font-medium transition-colors ${
-            value === o.value
-              ? "bg-primary text-primary-foreground"
-              : "text-muted-foreground hover:bg-accent hover:text-foreground"
-          }`}
-        >
-          {o.label}
-        </button>
-      ))}
+    <div data-tour="connectivity" className="absolute top-3 left-3 z-10 flex max-w-[calc(100%-1.5rem)] flex-col gap-2">
+      <div role="tablist" aria-label="Network view" className="flex items-end gap-1 border-b border-border">
+        {CONNECTIVITY_OPTIONS.map((o) => {
+          const selected = value === o.value;
+          return (
+            <button
+              key={o.value}
+              type="button"
+              role="tab"
+              aria-selected={selected}
+              onClick={() => onChange(o.value)}
+              className={`-mb-px rounded-t-lg border px-3 py-1.5 text-xs font-medium transition-colors sm:px-4 sm:text-sm ${
+                selected
+                  ? "border-primary/40 border-b-accent bg-accent text-primary"
+                  : "border-transparent bg-secondary text-muted-foreground hover:text-foreground"
+              }`}
+            >
+              {o.label}
+            </button>
+          );
+        })}
+      </div>
+      <p className="px-1 text-xs text-muted-foreground text-pretty">{active.description}</p>
     </div>
   );
 }

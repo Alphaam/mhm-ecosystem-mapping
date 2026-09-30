@@ -54,8 +54,8 @@ const TOUR_STEPS: TourStep[] = [
   },
   {
     target: '[data-tour="connectivity"]',
-    title: "6. Connected or all organizations",
-    body: "Switch between every organization in the region and only those with a relationship here. “Connected only” hides organizations that aren't linked to anyone in the region, so you can focus on the active network — and see at a glance who stands apart.",
+    title: "6. Two views of the network",
+    body: "The map opens on the Connected network: organizations with a documented relationship in this region. Switch to Additional ecosystem partners for a broader view that also includes organizations whose relationships may not be documented here, shown in their own field.",
   },
   {
     target: '[data-tour="graph"]',
@@ -95,7 +95,7 @@ export function NetworkExplorer({
   // Whether the map shows every org in the region or only those with at least
   // one relationship here. This is how connected vs. unconnected orgs are
   // visualized — "connected" simply hides the isolated ones.
-  const [connectivity, setConnectivity] = useState<ConnectivityFilter>("all");
+  const [connectivity, setConnectivity] = useState<ConnectivityFilter>("connected");
   const [focusOrgId, setFocusOrgId] = useState<string | null>(initialOrg);
   // Mirrors whatever's currently selected on the graph — set both when the
   // "Organizations" dropdown itself picks something, and by the graph
