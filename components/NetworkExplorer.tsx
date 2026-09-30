@@ -4,6 +4,7 @@ import { FilterLegend, type LegendMode } from "@/components/FilterLegend";
 import { GuidedTour, type TourStep } from "@/components/GuidedTour";
 import { Legend } from "@/components/Legend";
 import {
+  ConnectivityDescription,
   ConnectivityTabs,
   NetworkGraph,
   SIZE_MODE_OPTIONS,
@@ -343,15 +344,18 @@ export function NetworkExplorer({
           </div>
         </aside>
 
-        <div className="relative min-h-0 flex-1" data-tour="graph">
-          <NetworkGraph
-            graph={filteredGraph}
-            focusNodeId={focusOrgId}
-            onSelectionChange={setSelectedOrgName}
-            colorMode={legendMode}
-            sizeMode={sizeMode}
-            connectivity={connectivity}
-          />
+        <div className="flex min-h-0 flex-1 flex-col">
+          <ConnectivityDescription value={connectivity} />
+          <div className="relative min-h-0 flex-1" data-tour="graph">
+            <NetworkGraph
+              graph={filteredGraph}
+              focusNodeId={focusOrgId}
+              onSelectionChange={setSelectedOrgName}
+              colorMode={legendMode}
+              sizeMode={sizeMode}
+              connectivity={connectivity}
+            />
+          </div>
         </div>
       </div>
 

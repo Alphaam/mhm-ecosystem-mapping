@@ -792,9 +792,8 @@ export function ConnectivityTabs({
   value: ConnectivityFilter;
   onChange: (v: ConnectivityFilter) => void;
 }) {
-  const active = CONNECTIVITY_OPTIONS.find((o) => o.value === value) ?? CONNECTIVITY_OPTIONS[0];
   return (
-    <div className="-mb-px flex min-w-0 items-end gap-4">
+    <div className="-mb-px flex min-w-0 items-end">
       <div
         role="tablist"
         aria-label="Network view"
@@ -822,8 +821,14 @@ export function ConnectivityTabs({
           );
         })}
       </div>
-      <p className="hidden min-w-0 truncate pb-2 text-xs text-muted-foreground lg:block">{active.description}</p>
     </div>
+  );
+}
+
+export function ConnectivityDescription({ value }: { value: ConnectivityFilter }) {
+  const active = CONNECTIVITY_OPTIONS.find((o) => o.value === value) ?? CONNECTIVITY_OPTIONS[0];
+  return (
+    <p className="shrink-0 truncate px-4 pb-1 pt-3 text-xs text-muted-foreground sm:px-6">{active.description}</p>
   );
 }
 
