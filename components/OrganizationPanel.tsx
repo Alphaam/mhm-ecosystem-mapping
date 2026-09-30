@@ -34,7 +34,6 @@ export function OrganizationPanel({
       </div>
       <dl className="mt-2 space-y-1">
         <Row label="Organization Service Type" value={node.category} />
-        <Row label="Service Subsector" value={node.subsector} />
         <Row label="Grantee Status" value={GRANTEE_STATUS_LABELS[node.granteeStatus]} />
         {node.otherMhmGrantee !== null && (
           <Row label="Other MHM Grantee Status" value={node.otherMhmGrantee ? "Grantee" : "Not a Grantee"} />
@@ -45,6 +44,15 @@ export function OrganizationPanel({
         <Row label="Primary Service Area" value={node.serviceArea} />
       </dl>
       {node.kpi && <KpiSection kpi={node.kpi} />}
+      {node.connections.length === 0 && (
+        <div className="mt-2 border-t border-border pt-2">
+          <div className="rounded bg-muted/60 px-2 py-1.5 text-muted-foreground">
+            {node.isGrantee
+              ? "Unconnected grantee: no relationships to other organizations in this region."
+              : "No relationships to other organizations in this region."}
+          </div>
+        </div>
+      )}
       {node.connections.length > 0 && (
         <div className="mt-2 border-t border-border pt-2">
           <div className="mb-1 font-medium text-foreground">Connections in this region</div>
