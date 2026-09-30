@@ -334,7 +334,7 @@ export function NetworkExplorer({
           </div>
         </aside>
 
-        <div className="relative min-h-0 flex-1 p-4 sm:p-6" data-tour="graph">
+        <div className="relative min-h-0 flex-1 px-4 pt-3 pb-4 sm:px-6 sm:pt-4 sm:pb-6" data-tour="graph">
           <NetworkGraph
             graph={filteredGraph}
             focusNodeId={focusOrgId}

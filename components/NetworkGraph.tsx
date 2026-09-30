@@ -276,6 +276,15 @@ export function NetworkGraph({
     }
     const anchorY = showFields ? HEIGHT / 2 + 30 : HEIGHT / 2;
 
+    // Field titles sit above each group, so leave room for them at the top.
+    const topInset = showFields ? 44 : 8;
+    function clampToCanvas(x: number, y: number, r: number) {
+      return {
+        x: Math.max(r + 8, Math.min(WIDTH - r - 8, x)),
+        y: Math.max(r + topInset, Math.min(HEIGHT - r - 8, y)),
+      };
+    }
+
     const GOLDEN_ANGLE = Math.PI * (3 - Math.sqrt(5));
     const spiralSpacing = 3.4;
     const nodes: SimNode[] = graph.nodes.map((n, i) => {
@@ -303,6 +312,10 @@ export function NetworkGraph({
     const zoomBehavior = d3
       .zoom<SVGSVGElement, unknown>()
       .scaleExtent([0.3, 4])
+      .translateExtent([
+        [0, 0],
+        [WIDTH, HEIGHT],
+      ])
       .on("zoom", (event) => root.attr("transform", event.transform.toString()));
     svg.call(zoomBehavior);
 
@@ -552,8 +565,9 @@ export function NetworkGraph({
           // is the right one-time gate instead.
           .on("drag", (event, d) => {
             if (d.fx == null && d.fy == null) simulation.alphaTarget(0.3).restart();
-            d.fx = event.x;
-            d.fy = event.y;
+            const bounded = clampToCanvas(event.x, event.y, radius(d.id));
+            d.fx = bounded.x;
+            d.fy = bounded.y;
           })
           .on("end", (event, d) => {
             if (d.fx != null || d.fy != null) simulation.alphaTarget(0);
@@ -705,6 +719,11 @@ export function NetworkGraph({
     }
 
     simulation.on("tick", () => {
+      for (const d of nodes) {
+        const bounded = clampToCanvas(d.x, d.y, radius(d.id));
+        d.x = bounded.x;
+        d.y = bounded.y;
+      }
       link.attr("d", (d) => {
         const source = d.source as SimNode;
         const target = d.target as SimNode;
@@ -750,9 +769,13 @@ export function NetworkGraph({
   }, [focusNodeId]);
 
   return (
-    <div className="flex h-full w-full flex-col overflow-hidden rounded-xl bg-card">
-      <ConnectivityToggle value={connectivity} onChange={onConnectivityChange} />
-      <div className="relative min-h-0 flex-1 overflow-hidden">
+    <div className="flex h-full w-full flex-col">
+      <ConnectivityTabs value={connectivity} onChange={onConnectivityChange} />
+      <div className="flex min-h-0 flex-1 flex-col overflow-hidden rounded-xl border border-border bg-card">
+        <p className="shrink-0 border-b border-border bg-accent px-4 py-2 text-xs text-muted-foreground text-pretty">
+          {(CONNECTIVITY_OPTIONS.find((o) => o.value === connectivity) ?? CONNECTIVITY_OPTIONS[0]).description}
+        </p>
+        <div className="relative min-h-0 flex-1 overflow-hidden">
         <svg ref={svgRef} viewBox={`0 0 ${WIDTH} ${HEIGHT}`} className="h-full w-full" />
         {hover && <NameTooltip x={hover.x} y={hover.y} name={hover.name} />}
         {selectedNode && (
@@ -762,43 +785,45 @@ export function NetworkGraph({
             onSelectConnection={(id) => focusNodeRef.current(id)}
           />
         )}
+        </div>
       </div>
     </div>
   );
 }
 
-function ConnectivityToggle({
+function ConnectivityTabs({
   value,
   onChange,
 }: {
   value: ConnectivityFilter;
   onChange: (v: ConnectivityFilter) => void;
 }) {
-  const active = CONNECTIVITY_OPTIONS.find((o) => o.value === value) ?? CONNECTIVITY_OPTIONS[0];
   return (
-    <div data-tour="connectivity" className="relative z-10 flex shrink-0 flex-col gap-2 border-b border-dashed border-border bg-card px-3 pt-3 pb-2.5">
-      <div role="tablist" aria-label="Network view" className="flex items-end gap-1 border-b border-border">
-        {CONNECTIVITY_OPTIONS.map((o) => {
-          const selected = value === o.value;
-          return (
-            <button
-              key={o.value}
-              type="button"
-              role="tab"
-              aria-selected={selected}
-              onClick={() => onChange(o.value)}
-              className={`-mb-px rounded-t-lg border px-3 py-1.5 text-xs font-medium transition-colors sm:px-4 sm:text-sm ${
-                selected
-                  ? "border-primary/40 border-b-accent bg-accent text-primary"
-                  : "border-transparent bg-secondary text-muted-foreground hover:text-foreground"
-              }`}
-            >
-              {o.label}
-            </button>
-          );
-        })}
-      </div>
-      <p className="px-1 text-xs text-muted-foreground text-pretty">{active.description}</p>
+    <div
+      role="tablist"
+      aria-label="Network view"
+      data-tour="connectivity"
+      className="relative z-10 -mb-px flex shrink-0 items-end gap-1 px-3"
+    >
+      {CONNECTIVITY_OPTIONS.map((o) => {
+        const selected = value === o.value;
+        return (
+          <button
+            key={o.value}
+            type="button"
+            role="tab"
+            aria-selected={selected}
+            onClick={() => onChange(o.value)}
+            className={`rounded-t-lg border border-b-0 px-3 text-xs font-medium transition-colors sm:px-4 sm:text-sm ${
+              selected
+                ? "border-border bg-accent py-2 text-primary"
+                : "border-transparent bg-secondary py-1.5 text-muted-foreground hover:text-foreground"
+            }`}
+          >
+            {o.label}
+          </button>
+        );
+      })}
     </div>
   );
 }
