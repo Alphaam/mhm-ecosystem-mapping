@@ -30,7 +30,9 @@ interface Placement {
   cardTop: number;
   cardLeft: number;
   cardWidth: number;
-  arrow: "up" | "down" | null;
+  arrow: "up" | "down" | "left" | "right" | null;
+  /** Arrow offset along the card edge it sits on: from the left for up/down,
+   *  from the top for left/right. */
   arrowLeft: number;
 }
 
@@ -57,9 +59,32 @@ function computePlacement(rect: DOMRect, cardHeight: number): Placement {
   let cardLeft = targetCenterX - width / 2;
   cardLeft = Math.min(Math.max(cardLeft, VIEWPORT_MARGIN), vw - width - VIEWPORT_MARGIN);
 
-  // Prefer below the target; fall back to above; else pin within viewport.
   const spaceBelow = vh - rect.bottom;
   const spaceAbove = rect.top;
+  const fitsVertically = Math.max(spaceBelow, spaceAbove) >= cardHeight + CARD_GAP + VIEWPORT_MARGIN;
+
+  // Tall targets like the detail panel leave no room above or below, so the
+  // card would cover them. Sit beside the target instead when there is room.
+  if (!fitsVertically) {
+    const spaceLeft = rect.left - HOLE_PAD;
+    const spaceRight = vw - rect.right - HOLE_PAD;
+    const side = spaceLeft >= spaceRight ? "left" : "right";
+    if (Math.max(spaceLeft, spaceRight) >= width + CARD_GAP + VIEWPORT_MARGIN) {
+      const sideLeft = side === "left" ? rect.left - HOLE_PAD - CARD_GAP - width : rect.right + HOLE_PAD + CARD_GAP;
+      const anchorY = rect.top + Math.min(rect.height / 2, 120);
+      let sideTop = anchorY - 60;
+      sideTop = Math.min(Math.max(sideTop, VIEWPORT_MARGIN), vh - cardHeight - VIEWPORT_MARGIN);
+      return {
+        cardTop: sideTop,
+        cardLeft: sideLeft,
+        cardWidth: width,
+        arrow: side === "left" ? "right" : "left",
+        arrowLeft: Math.min(Math.max(anchorY - sideTop, 20), cardHeight - 20),
+      };
+    }
+  }
+
+  // Prefer below the target; fall back to above; else pin within viewport.
   let cardTop: number;
   let arrow: "up" | "down";
   if (spaceBelow >= cardHeight + CARD_GAP || spaceBelow >= spaceAbove) {
@@ -260,9 +285,13 @@ export function GuidedTour({
             aria-hidden="true"
             className="absolute h-3 w-3 rotate-45 bg-popover ring-1 ring-foreground/10"
             style={
-              placement.arrow === "up"
-                ? { top: -6, left: placement.arrowLeft - 6, clipPath: "polygon(0 0, 100% 0, 0 100%)" }
-                : { bottom: -6, left: placement.arrowLeft - 6, clipPath: "polygon(100% 0, 100% 100%, 0 100%)" }
+                placement.arrow === "up"
+                  ? { top: -6, left: placement.arrowLeft - 6, clipPath: "polygon(0 0, 100% 0, 0 100%)" }
+                  : placement.arrow === "down"
+                    ? { bottom: -6, left: placement.arrowLeft - 6, clipPath: "polygon(100% 0, 100% 100%, 0 100%)" }
+                    : placement.arrow === "right"
+                      ? { right: -6, top: placement.arrowLeft - 6, clipPath: "polygon(0 0, 100% 0, 100% 100%)" }
+                      : { left: -6, top: placement.arrowLeft - 6, clipPath: "polygon(0 0, 0 100%, 100% 100%)" }
             }
           />
         )}
