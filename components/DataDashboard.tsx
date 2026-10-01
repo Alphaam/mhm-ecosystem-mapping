@@ -141,11 +141,11 @@ export function DataDashboard({
               <BarChart
                 data={reportData.organizationsByService}
                 layout="vertical"
-                margin={{ top: 5, right: 30, left: 280, bottom: 5 }}
+                margin={{ top: 5, right: 30, left: 10, bottom: 5 }}
               >
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis type="number" tickFormatter={formatNumber} />
-                <YAxis dataKey="service" type="category" width={270} tick={{ fontSize: 12 }} />
+                <YAxis dataKey="service" type="category" width={230} tick={{ fontSize: 12 }} />
                 <Tooltip formatter={formatTooltipNumber} />
                 <Bar dataKey="count" fill="#3C4ED6" />
               </BarChart>
@@ -190,7 +190,7 @@ export function DataDashboard({
               <BarChart
                 data={reportData.recentFunding.ytdGrantFundsSpent.slice(0, 15)}
                 layout="vertical"
-                margin={{ top: 5, right: 30, left: 200, bottom: 5 }}
+                margin={{ top: 5, right: 30, left: 10, bottom: 5 }}
               >
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis type="number" tickFormatter={formatDollars} />
