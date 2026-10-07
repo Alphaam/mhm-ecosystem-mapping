@@ -66,7 +66,10 @@ export function DataDashboard({
           <p className="mt-4 text-sm sm:text-base text-gray-600">
             Complete data from the August 2026 ecosystem mapping analysis, covering grantee relationships, reach, and impact.
           </p>
-          <p className="mt-3 text-sm text-gray-500 sm:hidden">
+          <p className="mt-5 flex items-center gap-3 rounded-lg border border-[var(--cobalt)] bg-white px-4 py-3 text-sm font-medium text-[var(--raisin)] md:hidden">
+            <svg aria-hidden="true" viewBox="0 0 24 24" className="h-5 w-5 shrink-0 text-[var(--cobalt)]" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <rect x="7" y="2" width="10" height="20" rx="2" transform="rotate(90 12 12)" />
+            </svg>
             On a phone, turn it sideways to landscape view for the best experience.
           </p>
         </div>
@@ -189,13 +192,13 @@ export function DataDashboard({
           <p className="text-gray-600 mb-8">
             Three of 20 funded grantees – Human I-T, Computdopt, and City of Pharr – account for $2.1 million of reported spending – about half of the total $4.3 million spending reported.
           </p>
-          <div className="h-[44rem]">
+          <div className="h-[34rem]">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart
                 data={reportData.recentFunding.ytdGrantFundsSpent.slice(0, 15)}
                 layout="vertical"
                 margin={{ top: 5, right: 30, left: 10, bottom: 5 }}
-                barCategoryGap="30%"
+                barCategoryGap="15%"
               >
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis type="number" tickFormatter={formatDollars} />

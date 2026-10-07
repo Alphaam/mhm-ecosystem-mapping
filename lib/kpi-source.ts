@@ -219,6 +219,13 @@ export async function getKpiMap(): Promise<Record<string, OrgKpiSummary>> {
  * demographics, device distribution, and the collaboration network are not in
  * Airtable and remain static on the Data page.
  */
+// The 2025 Year End Airtable records have no "individuals served" field, so
+// this uses the figure from the original report (data/mhm-report.json) until
+// the field is added in Airtable. A real Airtable value always takes priority.
+const HARDCODED_TOTALS: Partial<Record<"served" | "outreach" | "partners", Record<string, number>>> = {
+  served: { "2025 Year End": 22332 },
+};
+
 export async function getEcosystemKpiTotals(): Promise<EcosystemKpiTotals> {
   const map = await getKpiMap();
 
@@ -245,7 +252,8 @@ export async function getEcosystemKpiTotals(): Promise<EcosystemKpiTotals> {
     const timeline: { period: string; count: number }[] = [];
     const missingPeriods: string[] = [];
     for (const period of orderedPeriods) {
-      const count = byPeriod.get(period)![key];
+      const label = formatPeriodLabel(period);
+      const count = byPeriod.get(period)![key] ?? HARDCODED_TOTALS[key]?.[label] ?? null;
       if (count == null) missingPeriods.push(formatPeriodLabel(period));
       else timeline.push({ period: formatPeriodLabel(period), count });
     }

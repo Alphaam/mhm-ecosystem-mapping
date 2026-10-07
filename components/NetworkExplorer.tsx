@@ -375,6 +375,27 @@ export function NetworkExplorer({
               sizeMode={sizeMode}
               connectivity={connectivity}
             />
+            {connectivity !== "all" && graph.links.length === 0 && (
+              <div className="pointer-events-none absolute inset-0 flex items-center justify-center p-6">
+                <div className="pointer-events-auto flex max-w-sm flex-col items-center gap-3 rounded-lg border border-dashed border-gray-300 bg-white px-6 py-5 text-center">
+                  <p className="text-sm font-medium text-[var(--raisin)] text-pretty">
+                    There are no documented organization relationships to report in this region.
+                  </p>
+                  {graph.nodes.length > 0 && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setConnectivity("all");
+                        router.replace(`/regions/${regionCode}?view=all`);
+                      }}
+                      className="text-sm font-medium text-[var(--cobalt)] underline underline-offset-4"
+                    >
+                      View the {graph.nodes.length} organization{graph.nodes.length === 1 ? "" : "s"} in this region
+                    </button>
+                  )}
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </div>
