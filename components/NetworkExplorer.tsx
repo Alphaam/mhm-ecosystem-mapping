@@ -45,7 +45,7 @@ const TOUR_STEPS: TourStep[] = [
     target: '[data-tour="filters"]',
     inSidebar: true,
     title: "3. Color and filter the map",
-    body: "Switch the coloring between Service Type (what an organization does) and Grantee Status (their funding relationship with MHM). Click any item in the list to show or hide those organizations.",
+    body: "Switch the coloring between Grantee Status (their funding relationship with MHM) and Service Type (what an organization does). Click any item in the list to show or hide those organizations.",
   },
   {
     target: '[data-tour="size-mode"]',
@@ -97,7 +97,7 @@ export function NetworkExplorer({
 }) {
   const router = useRouter();
   const [regionCode, setRegionCode] = useState(initialRegion);
-  const [legendMode, setLegendMode] = useState<LegendMode>("category");
+  const [legendMode, setLegendMode] = useState<LegendMode>("granteeStatus");
   const [selectedCategories, setSelectedCategories] = useState(() => new Set(CATEGORIES));
   const [selectedGranteeStatuses, setSelectedGranteeStatuses] = useState(() => new Set(ALL_GRANTEE_STATUSES));
   const [sizeMode, setSizeMode] = useState<SizeMode>("connections");
