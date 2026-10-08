@@ -38,7 +38,7 @@ function buildCategories(portfolioTotals: PortfolioTotals): StatCategory[] {
       borderClass: "border-teal-200",
       textClass: "text-[var(--teal)]",
       stats: [
-        { value: "$31.3M", label: "Funding awarded since 2024*" },
+        { value: "$31.3M", label: "Digital equity funding awarded since 2024*" },
         { value: String(portfolioTotals.relationshipCount), label: "Tracked ecosystem relationships" },
       ],
     },
@@ -170,7 +170,7 @@ export function ExecutiveSummary({ portfolioTotals }: { portfolioTotals: Portfol
               </div>
             ))}
             <p className="text-xs text-muted-foreground leading-relaxed">
-              *Includes Digital Equity grants, CI Open Call, SOF grants, and donations.
+              *Includes grants and donations.
             </p>
           </div>
         </div>
