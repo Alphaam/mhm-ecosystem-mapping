@@ -214,7 +214,7 @@ export function DataDashboard({
             </ResponsiveContainer>
           </div>
           <p className="mt-4 text-xs text-gray-500">
-            Source: DE Awarded by Year 2026 (Fluxx export). Includes grants and donations. A further $1.0M is already committed for 2027.
+            *Includes grants and donations. 
           </p>
         </section>
 
