@@ -213,9 +213,9 @@ export function DataDashboard({
               </BarChart>
             </ResponsiveContainer>
           </div>
-          <p className="mt-4 text-xs text-gray-500">
-            *Includes grants and donations. 
-          </p>
+              <p className="mt-4 text-xs text-gray-500">
+                *Includes grants and donations.
+              </p>
         </section>
 
         {/* MHM Total Funding Context */}
