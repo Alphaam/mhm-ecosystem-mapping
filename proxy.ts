@@ -5,7 +5,7 @@ export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   if (pathname === "/") {
-    return NextResponse.redirect(new URL("/regions/A", request.url));
+    return NextResponse.redirect(new URL("/home", request.url));
   }
 
   // Password lock disabled. To re-enable, uncomment this block and the import
