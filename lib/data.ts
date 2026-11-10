@@ -86,19 +86,11 @@ function buildCanonicalNameMap(rows: TrackerRow[]): Map<string, string> {
 const CANONICAL_NAMES = buildCanonicalNameMap(dataset.rows);
 const canon = (name: string) => CANONICAL_NAMES.get(name) ?? name;
 
-// MHM is the funder, so it shouldn't appear as an org in its own network.
-// Filtered here rather than in the JSON so a fresh tracker export keeps it out.
-const EXCLUDED_ORGS_BY_REGION: Record<string, Set<string>> = {
-  D: new Set(["Methodist Healthcare Ministries"]),
-};
-
-const ALL_ROWS: TrackerRow[] = dataset.rows
-  .map((row) => ({
-    ...row,
-    grantee: row.grantee ? canon(row.grantee) : row.grantee,
-    organization: canon(row.organization),
-  }))
-  .filter((row) => !(row.regionCode && EXCLUDED_ORGS_BY_REGION[row.regionCode]?.has(row.organization)));
+const ALL_ROWS: TrackerRow[] = dataset.rows.map((row) => ({
+  ...row,
+  grantee: row.grantee ? canon(row.grantee) : row.grantee,
+  organization: canon(row.organization),
+}));
 
 const NON_CATEGORY = new Set(["N/A (MHM Grantee)", "N/A - not a real organization", "Unable to classify"]);
 const GRANTEE_DEFAULT_SUBSECTOR = "Digital Equity / Digital Literacy";
